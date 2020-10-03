@@ -27,8 +27,10 @@ class TransferUtil {
     int iParOpen = sResponse.indexOf('(');
     int iParClose = sResponse.indexOf(')');
 
-    String sParameters = sResponse.substring(iParOpen + 1, iParClose);
-    List<String> lstParameters = sParameters.split(',');
+    if (iParClose > -1) {
+      sResponse = sResponse.substring(iParOpen + 1, iParClose);
+    }
+    List<String> lstParameters = sResponse.split(',');
 
     int iPort1 = int.parse(lstParameters[lstParameters.length - 2]);
     int iPort2 = int.parse(lstParameters[lstParameters.length - 1]);
