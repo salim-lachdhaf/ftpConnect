@@ -36,6 +36,9 @@ void main() {
     checkFileList(await ftpConnect.listContentWithCommand(ListCommand.MLSD));
     checkFileList(await ftpConnect.listContentWithCommand(ListCommand.LIST));
 
+    expect(await ftpConnect.checkFolderExistence(folderName), true);
+    expect(await ftpConnect.deleteDirectoryRecursively(folderName), true);
+    expect(await ftpConnect.checkFolderExistence(folderName), false);
     await ftpConnect.disconnect();
   });
 }

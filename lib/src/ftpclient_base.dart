@@ -81,6 +81,28 @@ class FTPConnect {
     return FTPDirectory(_socket).deleteDirectory(sDirectory);
   }
 
+  Future<bool> deleteDirectoryRecursively(String sDirectory) async {
+    String currentDir = await this.currentDirectory();
+    if (!await this.changeDirectory(sDirectory)) {
+      throw FTPException("Couldn't change directory");
+    }
+    List<SimpleFtpEntry> files = await this.listContentWithCommand(ListCommand.LIST);
+
+    for (var entry in files.where((element) => element.name != '.' && element.name != '..')) {
+      if (entry.type == FTPEntryType.FILE) {
+        if (!await deleteFile(entry.name)) {
+          throw FTPException("Couldn't delete file ${entry.name}");
+        }
+      } else {
+        if (!await deleteDirectoryRecursively(entry.name)) {
+          throw FTPException("Couldn't delete folder ${entry.name}");
+        }
+      }
+    }
+    await this.changeDirectory(currentDir);
+    return await deleteDirectory(sDirectory);
+  }
+
   /// Change into the Directory with the Name of [sDirectory] within the current directory.
   ///
   /// Use `..` to navigate back
