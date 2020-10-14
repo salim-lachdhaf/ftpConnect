@@ -1,11 +1,67 @@
 import 'package:ftpconnect/ftpconnect.dart';
 
-class FTPEntry {
+const _MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+DateTime _buildDateTime(String monthStr, String dayStr, String hourOrYear) {
+  int year;
+  int hour = 0;
+  int minute = 0;
+
+  if (hourOrYear.contains(':')) {
+    var splitted = hourOrYear.trim().split(':');
+    hour = int.parse(splitted[0]);
+    minute = int.parse(splitted[1]);
+    year = DateTime.now().year;
+  } else {
+    year = int.parse(hourOrYear.trim());
+  }
+
+  int month = _MONTHS.indexOf(monthStr.trim()) + 1;
+
+  return DateTime(year, month, int.parse(dayStr.trim()), hour, minute);
+}
+
+class SimpleFtpEntry {
+  static final linePattern = RegExp(r"([-dl]).* ([0-9]+) ([a-zA-Z]{3}) (.[0-9]) +(\d{2}:?\d{2}) (.*)");
+  final String originalLine;
   final String name;
   final DateTime modifyTime;
-  final String persmission;
   final FTPEntryType type;
   final int size;
+
+  SimpleFtpEntry({this.originalLine, this.name, this.modifyTime, this.type, this.size});
+
+  factory SimpleFtpEntry.parse(String line) {
+    if (line == null || line.trim().isEmpty) {
+      throw FTPException('Can\'t create instance from empty information');
+    }
+    if (!linePattern.hasMatch(line)) {
+      throw ArgumentError.value(line, 'ftp list files line', "doesn't match regex: $linePattern");
+    }
+    var match = linePattern.firstMatch(line);
+    String type = match.group(1);
+    int size = int.parse(match.group(2));
+    DateTime modifyTime = _buildDateTime(match.group(3), match.group(4), match.group(5));
+    String filename = match.group(6);
+
+    return SimpleFtpEntry(
+        originalLine: line,
+        type: type == 'd' ? FTPEntryType.DIR : FTPEntryType.FILE,
+        size: size,
+        modifyTime: modifyTime,
+        name: filename);
+  }
+
+  @override
+  String toString() {
+    return "name: $name, type: $type, size: $size, modifyTime: $modifyTime";
+  }
+
+  
+}
+
+class FTPEntry extends SimpleFtpEntry {
+  final String persmission;
   final String unique;
   final String group;
   final int gid;
@@ -16,18 +72,25 @@ class FTPEntry {
 
   // Hide constructor
   FTPEntry._(
-      this.name,
-      this.modifyTime,
+      String originalLine, 
+      String name, 
+      DateTime modifyTime, 
       this.persmission,
-      this.type,
-      this.size,
+      FTPEntryType type, 
+      int size,
       this.unique,
       this.group,
       this.gid,
       this.mode,
       this.owner,
       this.uid,
-      this.additionalProperties);
+      this.additionalProperties)
+      : super(
+        originalLine: originalLine, 
+        name: name, 
+        modifyTime: modifyTime, 
+        type: type, 
+        size: size);
 
   factory FTPEntry(final String sMlsdResponseLine) {
     if (sMlsdResponseLine == null || sMlsdResponseLine.trim().isEmpty) {
@@ -99,7 +162,7 @@ class FTPEntry {
       }
     });
 
-    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
+    return FTPEntry._(sMlsdResponseLine, _name, _modifyTime, _persmission, _type, _size,_unique,
         _group, _gid, _mode, _owner, _uid, Map.unmodifiable(_additional));
   }
 

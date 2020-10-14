@@ -18,5 +18,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-flutter:
+  file: ^5.2.1

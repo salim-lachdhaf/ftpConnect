@@ -100,6 +100,10 @@ class FTPConnect {
     return FTPDirectory(_socket).listDirectoryContent();
   }
 
+  Future<List<T>> listContentWithCommand<T>(ListCommand<T> command) {
+    return FTPDirectory(_socket).listContentWithCommand(command);
+  }
+
   /// Rename a file (or directory) from [sOldName] to [sNewName]
   Future<bool> rename(String sOldName, String sNewName) {
     return FTPFile(_socket).rename(sOldName, sNewName);
