@@ -1,4 +1,4 @@
-name: Flutter
+name: FtpConnect
 
 on:
   push:
@@ -7,12 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+  build:
+    runs-on: macos-latest
     steps:
       - name: Flutter action
         uses: subosito/flutter-action@v1.4.0
@@ -27,3 +23,5 @@ jobs:
       - run: flutter pub get
       - run: flutter test
       - run: flutter build apk
+      - run: flutter build appbundle
+      - run: flutter build ios --release --no-codesign
