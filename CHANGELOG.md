@@ -1,3 +1,6 @@
+## [0.1.7] - 2020.11.18
+* migration to embedding Android
+* fix bug [#3](https://github.com/salim-lachdhaf/ftpConnect/issues/3)
 ## [0.1.6] - 2020.05.22
 * throw exception if directory doesn't exist
 ## [0.1.5] - 2020.05.21

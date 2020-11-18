@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ftpconnect/src/debug/debugLog.dart';
+import 'package:ftpconnect/src/util/transferUtil.dart';
 
 import '../ftpconnect.dart';
 
@@ -47,6 +48,20 @@ class FTPSocket {
     return '';
   }
 
+  ///if we receive a response different then that we are waiting for
+  ///(both success or fail), we read again the response
+  Future<bool> _isResponseOK(
+      String response, int successCode, int failCode) async {
+    if (TransferUtil.isResponseStartsWith(response, failCode)) return false;
+    if (!TransferUtil.isResponseStartsWith(response, successCode)) {
+      response = await readResponse();
+      if (!TransferUtil.isResponseStartsWith(response, successCode)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Connect to the FTP Server and Login with [user] and [pass]
   Future<bool> connect(String user, String pass) async {
     _log.log('Connecting...');
@@ -60,15 +75,16 @@ class FTPSocket {
 
     // Send Username
     String sResponse = await sendCommand('USER $user');
-    if (!sResponse.startsWith('220')) {
+    if (!await _isResponseOK(sResponse, 220, 520)) {
       throw FTPException('Wrong username $user', sResponse);
     }
 
     // Send Password
     sResponse = await sendCommand('PASS $pass');
-    if (!sResponse.startsWith('230')) {
+    if (!await _isResponseOK(sResponse, 230, 530)) {
       throw FTPException('Wrong password', sResponse);
     }
+
 
     _log.log('Connected!');
     return true;

@@ -8,7 +8,7 @@ environment:
 dependencies:
   ftpconnect:
     path: ../
-  path_provider: ^1.6.8
+  path_provider: ^1.6.24
   flutter:
     sdk: flutter
 

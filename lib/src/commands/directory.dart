@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/dto/FTPEntry.dart';
 import 'package:ftpconnect/src/util/transferUtil.dart';
@@ -43,7 +44,8 @@ class FTPDirectory {
     return sResponse.substring(iStart, iEnd);
   }
 
-  Future<List<FTPEntry>> listDirectoryContent() async {
+  Future<List<FTPEntry>> listDirectoryContent(
+      {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
     // Transfer mode
     await TransferUtil.setTransferMode(_socket, TransferMode.ascii);
 
@@ -51,7 +53,7 @@ class FTPDirectory {
     String sResponse = await TransferUtil.enterPassiveMode(_socket);
 
     // Directoy content listing, the response will be handled by another socket
-    await _socket.sendCommand('MLSD', waitResponse: false);
+    await _socket.sendCommand(describeEnum(cmd), waitResponse: false);
 
     // Data transfer socket
     int iPort = TransferUtil.parsePort(sResponse);
@@ -80,3 +82,5 @@ class FTPDirectory {
     return lstFTPEntries;
   }
 }
+
+enum DIR_LIST_COMMAND { LIST, MLSD }

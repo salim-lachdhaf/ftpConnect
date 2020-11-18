@@ -85,6 +85,15 @@ class TransferUtil {
     return pResponse;
   }
 
+  ///check the existence of given code inside a a given response
+  static bool isResponseStartsWith(String response, int code) {
+    var lines = response?.split('\n')??[];
+    for(var l in lines) {
+      if (l.startsWith(code.toString())) return true;
+    }
+    return false;
+  }
+
   ///Tell the socket [socket] that we will enter in passive mode
   static Future<String> enterPassiveMode(FTPSocket socket) async {
     String sResponse = await socket.sendCommand('PASV');
