@@ -95,7 +95,7 @@ class FTPConnect {
   /// [cmd] refer to the used command for the server, there is servers working
   /// with MLSD and other with LIST
   Future<List<FTPEntry>> listDirectoryContent({DIR_LIST_COMMAND cmd}) {
-    return FTPDirectory(_socket).listDirectoryContent(cmd:cmd);
+    return FTPDirectory(_socket).listDirectoryContent(cmd: cmd);
   }
 
   /// Rename a file (or directory) from [sOldName] to [sNewName]
@@ -155,11 +155,11 @@ class FTPConnect {
   /// Download the Remote Directory [pRemoteDir] to the local File [pLocalDir]
   /// [pRetryCount] number of attempts
   Future<bool> downloadDirectory(String pRemoteDir, Directory pLocalDir,
-      { DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
+      {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
     Future<bool> downloadDir(String pRemoteDir, Directory pLocalDir) async {
       //read remote directory content
       if (await this.changeDirectory(pRemoteDir)) {
-        List<FTPEntry> dirContent = await this.listDirectoryContent(cmd:cmd);
+        List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
         await Future.forEach(dirContent, (FTPEntry entry) async {
           if (entry.type == FTPEntryType.FILE) {
             File localFile = File(join(pLocalDir.path, entry.name));

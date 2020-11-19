@@ -85,7 +85,6 @@ class FTPSocket {
       throw FTPException('Wrong password', sResponse);
     }
 
-
     _log.log('Connected!');
     return true;
   }

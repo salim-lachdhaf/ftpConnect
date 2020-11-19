@@ -87,8 +87,8 @@ class TransferUtil {
 
   ///check the existence of given code inside a a given response
   static bool isResponseStartsWith(String response, int code) {
-    var lines = response?.split('\n')??[];
-    for(var l in lines) {
+    var lines = response?.split('\n') ?? [];
+    for (var l in lines) {
       if (l.startsWith(code.toString())) return true;
     }
     return false;
