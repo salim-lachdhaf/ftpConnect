@@ -34,7 +34,7 @@ jobs:
           file: coverage/lcov.info
 
       # run  flutter widgets tests  and unit tests
-      - run: flutter test
+      #- run: flutter test
      # - run: flutter build apk --release --split-per-abi --target=example/lib/main.dart
       #- run: flutter build appbundle --target=example/lib/main.dart
 

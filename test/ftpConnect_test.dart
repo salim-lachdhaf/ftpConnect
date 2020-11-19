@@ -6,7 +6,7 @@ import 'package:ftpconnect/src/commands/directory.dart';
 
 void main() {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
-      user: "anonymous", pass: "anonymous", debug: true);
+      user: "anonymous", pass: "anonymous", timeout: 60, debug: true);
   const String testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
@@ -117,8 +117,7 @@ void main() {
     //test unzip
     expect(
         await FTPConnect.unZipFile(
-                File('$testFileDir$_localZip'), '$testFileDir$_localUnZipDir')
-            is List<String>,
+            File('$testFileDir$_localZip'), _localUnZipDir) is List<String>,
         equals(true));
   });
 }
