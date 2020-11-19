@@ -7,6 +7,7 @@ import 'package:ftpconnect/src/commands/directory.dart';
 void main() {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", debug: true);
+  const String testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
   const String _localZip = 'testZip.zip';
@@ -15,7 +16,8 @@ void main() {
 
   ///mock a file for the demonstration example
   Future<File> _fileMock({fileName = _localUploadFile}) async {
-    final Directory directory = Directory('test')..createSync(recursive: true);
+    final Directory directory = Directory(testFileDir)
+      ..createSync(recursive: true);
     final File file = File('${directory.path}/$fileName');
     await file.writeAsString(DateTime.now().toString());
     return file;
@@ -73,7 +75,7 @@ void main() {
     //test download file
     expect(
         await _ftpConnect.downloadFile(
-            '../512KB.zip', File('test/$_localDownloadFile')),
+            '../512KB.zip', File('$testFileDir$_localDownloadFile')),
         equals(true));
     //get file size
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));
@@ -95,7 +97,7 @@ void main() {
     //download test
     expect(
         await _ftpConnect.downloadFileWithRetry(
-            '../512KB.zip', File('test/$_localZip')),
+            '../512KB.zip', File('$testFileDir$_localZip')),
         equals(true));
 
     //upload file
@@ -109,13 +111,14 @@ void main() {
     //zip file
     expect(
         await FTPConnect.zipFiles(
-            ['test/$_localUploadFile'], 'test/$_localZip'),
+            ['test/$_localUploadFile'], '$testFileDir$_localZip'),
         equals(true));
 
     //test unzip
     expect(
         await FTPConnect.unZipFile(
-            File('test/$_localZip'), 'test/$_localUnZipDir') is List<String>,
+                File('$testFileDir$_localZip'), '$testFileDir$_localUnZipDir')
+            is List<String>,
         equals(true));
   });
 }
