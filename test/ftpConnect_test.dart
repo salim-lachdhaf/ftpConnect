@@ -38,6 +38,12 @@ void main() {
             is List<FTPEntry>,
         equals(true));
 
+    //delete directory => false because the folder is protected
+    expect(await _ftpConnect.deleteDirectory("upload"), equals(false));
+
+    //make directory => false because the folder is protected
+    expect(await _ftpConnect.makeDirectory("upload2"), equals(false));
+
     //close connexion
     expect(await _ftpConnect.disconnect(), equals(true));
   });
@@ -62,6 +68,10 @@ void main() {
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));
     //test delete file (false because the server is protected)
     expect(await _ftpConnect.deleteFile('../512KB.zip'), equals(false));
+
+    //test rename file (false because the server is protected)
+    expect(await _ftpConnect.rename('../512KB.zip', '../512kb.zip'),
+        equals(false));
 
     expect(await _ftpConnect.disconnect(), equals(true));
   });
