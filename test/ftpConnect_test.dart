@@ -49,7 +49,7 @@ void main() {
     expect(await _ftpConnect.currentDirectory(), equals("/upload"));
 
     //test upload file (this file will be automatically deleted after upload by the server)
-    expect(await _ftpConnect.uploadFile(await _fileMock(fileName: 'salim.txt', content: 'Hola'), sRemoteName: '/upload/test.txt'), equals(true));
+    expect(await _ftpConnect.uploadFile(await _fileMock(fileName: 'salim.txt', content: 'Hola')), equals(true));
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
     //test download file
@@ -70,6 +70,6 @@ void main() {
     //download test
     expect(await _ftpConnect.downloadFileWithRetry('../512KB.zip', File('local.zip')), equals(true));
     //upload file
-    expect(await _ftpConnect.uploadFileWithRetry(await _fileMock(fileName: 'salim.txt', content: 'test'),pRemoteName: '/upload/test.txt'), equals(true));
+    expect(await _ftpConnect.uploadFileWithRetry(await _fileMock(fileName: 'salim.txt', content: 'test')), equals(true));
   });
 }
