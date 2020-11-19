@@ -7,7 +7,7 @@ import 'package:ftpconnect/src/commands/directory.dart';
 void main() {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", timeout: 60, debug: true);
-  const String testFileDir = 'test/testResFiles/';
+  const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
   const String _localZip = 'testZip.zip';
@@ -16,7 +16,7 @@ void main() {
 
   ///mock a file for the demonstration example
   Future<File> _fileMock({fileName = _localUploadFile}) async {
-    final Directory directory = Directory(testFileDir)
+    final Directory directory = Directory(_testFileDir)
       ..createSync(recursive: true);
     final File file = File('${directory.path}/$fileName');
     await file.writeAsString(DateTime.now().toString());
@@ -51,10 +51,9 @@ void main() {
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));
 
     //download a dir => false to prevent long loading duration of the test
-    var unExistDir = 'nonExstanceDir';
     expect(
         () async => await _ftpConnect.downloadDirectory(
-            unExistDir, Directory('localDir'),
+            'nonExstanceDir', Directory(_testFileDir),
             cmd: DIR_LIST_COMMAND.LIST),
         throwsA(isInstanceOf<FTPException>()));
 
@@ -75,7 +74,7 @@ void main() {
     //test download file
     expect(
         await _ftpConnect.downloadFile(
-            '../512KB.zip', File('$testFileDir$_localDownloadFile')),
+            '../512KB.zip', File('$_testFileDir$_localDownloadFile')),
         equals(true));
     //get file size
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));
@@ -97,7 +96,7 @@ void main() {
     //download test
     expect(
         await _ftpConnect.downloadFileWithRetry(
-            '../512KB.zip', File('$testFileDir$_localZip')),
+            '../512KB.zip', File('$_testFileDir$_localZip')),
         equals(true));
 
     //upload file
@@ -111,13 +110,13 @@ void main() {
     //zip file
     expect(
         await FTPConnect.zipFiles(
-            ['test/$_localUploadFile'], '$testFileDir$_localZip'),
+            ['test/$_localUploadFile'], '$_testFileDir$_localZip'),
         equals(true));
 
     //test unzip
     expect(
         await FTPConnect.unZipFile(
-            File('$testFileDir$_localZip'), _localUnZipDir) is List<String>,
+            File('$_testFileDir$_localZip'), _localUnZipDir) is List<String>,
         equals(true));
   });
 }
