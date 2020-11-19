@@ -13,6 +13,9 @@
          alt="Build">
   </a>
   <a href="https://pub.dev/packages/ftpconnect"><img src="https://img.shields.io/pub/v/ftpconnect"></a>
+  <a href="https://codecov.io/gh/salim-lachdhaf/ftpConnect">
+    <img src="https://codecov.io/gh/salim-lachdhaf/ftpConnect/branch/master/graph/badge.svg" />
+  </a>
 </p>
 
 <p align="center">
