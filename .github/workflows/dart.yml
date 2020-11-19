@@ -36,7 +36,7 @@ jobs:
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
       - run: flutter test
-      - run: flutter build apk --target=lib/ftpconnect.dart
+      - run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi --target=lib/ftpconnect.dart
       - run: flutter build appbundle --target=lib/ftpconnect.dart
       #- run: flutter build ios --release --no-codesign
 
