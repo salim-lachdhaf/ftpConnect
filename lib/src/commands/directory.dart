@@ -53,7 +53,7 @@ class FTPDirectory {
     String sResponse = await TransferUtil.enterPassiveMode(_socket);
 
     // Directoy content listing, the response will be handled by another socket
-    await _socket.sendCommand(describeEnum(cmd), waitResponse: false);
+    await _socket.sendCommand(describeEnum(cmd ?? DIR_LIST_COMMAND.MLSD), waitResponse: false);
 
     // Data transfer socket
     int iPort = TransferUtil.parsePort(sResponse);

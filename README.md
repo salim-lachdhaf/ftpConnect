@@ -43,7 +43,9 @@ import 'package:ftpconnect/ftpConnect.dart';
 main() async{
     FTPConnect ftpConnect = FTPConnect('example.com',user:'user', pass:'pass');
     File fileToUpload = File('fileToUpload.txt');
+    await ftpConnect.connect();
     bool res = await ftpConnect.uploadFileWithRetry(fileToUpload, pRetryCount: 2);
+    await ftpConnect.disconnect();
     print(res);
 }
 ```
@@ -75,7 +77,9 @@ import 'package:ftpconnect/ftpConnect.dart';
 main() async{
     FTPConnect ftpConnect = FTPConnect('example.com',user:'user', pass:'pass');
     String fileName = 'toDownload.txt';
+    await ftpConnect.connect();
     bool res = await ftpConnect.downloadFileWithRetry(fileName, File('myFileFromFTP.txt'));
+    await ftpConnect.disconnect();
     print(res)
 }
 ```

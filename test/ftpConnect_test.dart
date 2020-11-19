@@ -5,15 +5,18 @@ import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/commands/directory.dart';
 
 void main() {
-  FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
+  final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", debug: true);
+  const String _localUploadFile = 'test_upload.txt';
+  const String _localDownloadFile = 'test_download.txt';
+  const String _localZip = 'testZip.zip';
   TestWidgetsFlutterBinding.ensureInitialized();
 
   ///mock a file for the demonstration example
-  Future<File> _fileMock({fileName = 'FlutterTest.txt', content = ''}) async {
+  Future<File> _fileMock({fileName = _localUploadFile}) async {
     final Directory directory = Directory('test')..createSync(recursive: true);
     final File file = File('${directory.path}/$fileName');
-    await file.writeAsString(content);
+    await file.writeAsString(DateTime.now().toString());
     return file;
   }
 
@@ -44,6 +47,14 @@ void main() {
     //make directory => false because the folder is protected
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));
 
+    //download a dir => false to prevent long loading duration of the test
+    var unExistDir = 'nonExstanceDir';
+    expect(
+        () async => await _ftpConnect.downloadDirectory(
+            unExistDir, Directory('localDir'),
+            cmd: DIR_LIST_COMMAND.LIST),
+        throwsA(isInstanceOf<FTPException>()));
+
     //close connexion
     expect(await _ftpConnect.disconnect(), equals(true));
   });
@@ -55,14 +66,13 @@ void main() {
     expect(await _ftpConnect.currentDirectory(), equals("/upload"));
 
     //test upload file (this file will be automatically deleted after upload by the server)
-    expect(
-        await _ftpConnect.uploadFile(
-            await _fileMock(fileName: 'salim.txt', content: 'Hola')),
-        equals(true));
+    expect(await _ftpConnect.uploadFile(await _fileMock()), equals(true));
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
     //test download file
-    expect(await _ftpConnect.downloadFile('../512KB.zip', File('res.txt')),
+    expect(
+        await _ftpConnect.downloadFile(
+            '../512KB.zip', File('test/$_localDownloadFile')),
         equals(true));
     //get file size
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));
@@ -84,12 +94,27 @@ void main() {
     //download test
     expect(
         await _ftpConnect.downloadFileWithRetry(
-            '../512KB.zip', File('local.zip')),
+            '../512KB.zip', File('test/$_localZip')),
         equals(true));
+
     //upload file
     expect(
-        await _ftpConnect.uploadFileWithRetry(
-            await _fileMock(fileName: 'salim.txt', content: 'test')),
+        await _ftpConnect.uploadFileWithRetry(await _fileMock()), equals(true));
+
+    expect(await _ftpConnect.disconnect(), equals(true));
+  });
+
+  test('test ftpConnect ZIP functions', () async {
+    //zip file
+    expect(
+        await FTPConnect.zipFiles(
+            ['test/$_localUploadFile'], 'test/$_localZip'),
+        equals(true));
+
+    //test unzip
+    expect(
+        await FTPConnect.unZipFile(
+            File('test/$_localZip'), 'test/$_localDownloadFile'),
         equals(true));
   });
 }
