@@ -21,8 +21,20 @@ jobs:
         with:
           flutter-version: '1.22.4'
       - run: flutter pub get
-      - run: flutter format --set-exit-if-changed
+      #- run: flutter format --set-exit-if-changed
       - run: flutter analyze
+
+      - run: flutter test --coverage
+          # Upload coverage reports to Codecov
+          # https://github.com/marketplace/actions/codecov
+          - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            file: coverage/lcov.info
+
+      # run  flutter widgets tests  and unit tests
+      - run: flutter test --coverage
       - run: flutter test
       - run: flutter build apk
       - run: flutter build appbundle
