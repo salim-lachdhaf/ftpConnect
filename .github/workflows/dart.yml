@@ -36,8 +36,8 @@ jobs:
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
       - run: flutter test
-      - run: flutter build apk --release --split-per-abi --target=example
-      - run: flutter build appbundle --target=example
+      - run: flutter build apk --release --split-per-abi --target=example/lib/main.dart
+      - run: flutter build appbundle --target=example/lib/main.dart
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
