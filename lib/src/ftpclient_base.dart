@@ -181,9 +181,7 @@ class FTPConnect {
     }
 
     Future<bool> downloadDirRetry() async {
-      await this.connect();
       bool res = await downloadDir(pRemoteDir, pLocalDir);
-      await this.disconnect();
       return res;
     }
 

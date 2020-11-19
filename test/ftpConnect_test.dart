@@ -6,7 +6,7 @@ import 'package:ftpconnect/src/commands/directory.dart';
 
 void main() {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
-      user: "anonymous", pass: "anonymous", timeout: 60, debug: true);
+      user: "anonymous", pass: "anonymous", debug: true);
   const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';

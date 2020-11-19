@@ -99,6 +99,8 @@ class FTPSocket {
       // Ignore
     } finally {
       await _socket?.close();
+      _socket?.shutdown(SocketDirection.both);
+      _socket = null;
     }
 
     _log.log('Disconnected!');
