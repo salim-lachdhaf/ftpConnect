@@ -34,7 +34,7 @@ void main() {
     expect(await _ftpConnect.changeDirectory("upload"), equals(true));
     //list directory content
     expect(
-        (await _ftpConnect.listDirectoryContent(cmd: DIR_LIST_COMMAND.MLSD))
+        (await _ftpConnect.listDirectoryContent(cmd: DIR_LIST_COMMAND.LIST))
             is List<FTPEntry>,
         equals(true));
 
