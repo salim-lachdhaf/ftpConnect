@@ -19,9 +19,3 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-  plugin:
-    platforms:
-      android:
-        pluginClass: ftpConnect
-      ios:
-        pluginClass: ftpConnect
