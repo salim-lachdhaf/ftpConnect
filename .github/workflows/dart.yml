@@ -1,4 +1,4 @@
-name: FtpConnect
+name: dart
 
 on:
   push:
