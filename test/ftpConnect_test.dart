@@ -10,6 +10,7 @@ void main() {
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
   const String _localZip = 'testZip.zip';
+  const String _localUnZipDir = 'testUnZip';
   TestWidgetsFlutterBinding.ensureInitialized();
 
   ///mock a file for the demonstration example
@@ -114,7 +115,7 @@ void main() {
     //test unzip
     expect(
         await FTPConnect.unZipFile(
-            File('test/$_localZip'), 'test/$_localDownloadFile'),
+            File('test/$_localZip'), 'test/$_localUnZipDir') is List<String>,
         equals(true));
   });
 }

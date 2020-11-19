@@ -51,7 +51,7 @@ class FTPSocket {
   ///if we receive a response different then that we are waiting for
   ///(both success or fail), we read again the response
   Future<bool> _isResponseOK(
-      String response, int successCode, int failCode) async {
+      String response, List<int> successCode, List<int> failCode) async {
     if (TransferUtil.isResponseStartsWith(response, failCode)) return false;
     if (!TransferUtil.isResponseStartsWith(response, successCode)) {
       response = await readResponse();
@@ -75,13 +75,13 @@ class FTPSocket {
 
     // Send Username
     String sResponse = await sendCommand('USER $user');
-    if (!await _isResponseOK(sResponse, 220, 520)) {
+    if (!await _isResponseOK(sResponse, [220, 331], [520])) {
       throw FTPException('Wrong username $user', sResponse);
     }
 
     // Send Password
     sResponse = await sendCommand('PASS $pass');
-    if (!await _isResponseOK(sResponse, 230, 530)) {
+    if (!await _isResponseOK(sResponse, [230], [530])) {
       throw FTPException('Wrong password', sResponse);
     }
 

@@ -1,4 +1,4 @@
-name: dart
+name: build
 
 on:
   push:
