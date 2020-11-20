@@ -60,7 +60,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
-          tag: v0.1.7
+          tag: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
