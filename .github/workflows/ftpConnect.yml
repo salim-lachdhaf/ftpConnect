@@ -45,11 +45,11 @@ jobs:
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
-      #- name: Create a Release APK
-      #  uses: ncipollo/release-action@v1
-      #  with:
-      #    artifacts: "build/app/outputs/apk/debug/*.apk"
-      #    token: ${{ secrets.GH_TOKEN }}
+      - name: Create a Release APK
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/release/*.apk"
+          token: ${{ secrets.GH_TOKEN }}
       #
       ##- run: flutter build ios --release --no-codesign
       #
