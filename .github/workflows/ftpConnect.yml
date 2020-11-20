@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master, dev ]
     tags:
-    - '*'
+      - '*'
   pull_request:
     branches: [ master, dev ]
 
@@ -58,12 +58,11 @@ jobs:
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
-      - name: Tagname
-        run: echo "DATE=$(date +%y%m%d)" >> $GITHUB_ENV
+      - name: Echo GITHUB_REF
+        run: echo $GITHUB_REF
       - name: Create a Release APK
         uses: ncipollo/release-action@v1.7.3
         with:
-          tag: day${{ env.DATE }}
           artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
           omitName: Release ${{ github.ref }}
           token: ${{ secrets.GH_TOKEN }}
