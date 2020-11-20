@@ -117,6 +117,10 @@ class FTPEntry {
   ///d for Dir
   ///- for file
   factory FTPEntry._parseListCommand(final String responseLine) {
+    if (responseLine == null || responseLine.trim().isEmpty) {
+      throw FTPException('Can\'t create instance from empty information');
+    }
+
     String _name;
     DateTime _modifyTime;
     String _persmission;

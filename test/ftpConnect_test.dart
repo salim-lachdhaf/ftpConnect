@@ -142,6 +142,16 @@ void main() {
     expect(ftpEntry.group, equals('108'));
     expect(ftpEntry.size, equals(1024));
     expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    var data4 = 'drw-------    1 105';
+    ftpEntry = FTPEntry.parse(data4, DIR_LIST_COMMAND.MLSD);
+    expect(ftpEntry.name, equals(data4));
+
+    var data5;
+    expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.MLSD),
+        throwsA(isInstanceOf<FTPException>()));
+    expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.LIST),
+        throwsA(isInstanceOf<FTPException>()));
   });
 
   test('test FTPConnect exception', () {
