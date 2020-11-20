@@ -119,4 +119,16 @@ void main() {
             File('$_testFileDir$_localZip'), _localUnZipDir) is List<String>,
         equals(true));
   });
+
+  test('test FTP Entry Class', (){
+    FTPEntry ftpEntry = FTPEntry("-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
+    expect(ftpEntry.persmission, equals('-rw-------'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+
+  });
 }
