@@ -34,6 +34,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
 
+
       - run: pushd example && flutter build apk --release --split-per-abi
       - run: pushd example && flutter build appbundle
 
