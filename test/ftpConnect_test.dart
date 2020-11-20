@@ -120,64 +120,39 @@ void main() {
         equals(true));
   });
 
-  // test('test FTP Entry Class', () {
-  //   FTPEntry ftpEntry = FTPEntry(
-  //       "-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
-  //   // expect(ftpEntry.persmission, equals('-rw-------'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   // expect(ftpEntry.name, equals('10000GB.ZIP'));
-  // });
-  //
-  // ///reference http://cr.yp.to/ftp/list/binls.html
-  // ///-rw-r--r-- 1 owner group           213 Aug 26 16:31 FileName.txt
-  // ///d for Dir
-  // ///- for file
-  // FTPEntry convert(String s) {
-  //   String _name;
-  //   DateTime _modifyTime;
-  //   String _persmission;
-  //   FTPEntryType _type;
-  //   int _size = 0;
-  //   String _unique;
-  //   String _group;
-  //   int _gid = -1;
-  //   String _mode;
-  //   String _owner;
-  //   int _uid = -1;
-  //
-  //   var data = s.split(" ")..removeWhere((i) => i.trim().isEmpty);
-  //   if (data.length < 9)
-  //     return FTPEntry.x(_name, _modifyTime, _persmission, _type, _size, _unique,
-  //         _group, _gid, _mode, _owner, _uid, Map.unmodifiable({}));
-  //
-  //   //permission and type in first
-  //   _type = data.first[0] == "-" ? FTPEntryType.FILE : FTPEntryType.DIR;
-  //   _persmission = data.first.substring(1);
-  //
-  //   //owner in third place
-  //   _owner = data[2];
-  //
-  //   //group in forth place
-  //   _group = data[3];
-  //
-  //   //size in fifth place
-  //   _size = int.tryParse(data[4]) ?? 0;
-  //
-  //   //date in six, seven and eight place
-  //   String date = '${data[5]}${data[6]}${data[7]}';
-  //   String month = data[5];
-  //   String day = data[6];
-  //   String year =
-  //       data[7].contains(':') ? DateTime.now().year.toString() : data[7];
-  //   String time = !data[7].contains(':') ? null : data[7];
-  //
-  //   // _modifyTime =
-  //
-  //   //file name in the last
-  //   _name = data.last;
-  // }
+  test('test FTP Entry Class', () {
+    var data = '-rw-------    1 105      108        1024 Jan 10 11:50 file.zip';
+    FTPEntry ftpEntry = FTPEntry.parse(data, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.FILE));
+    expect(ftpEntry.persmission, equals('rw-------'));
+    expect(ftpEntry.name, equals('file.zip'));
+    expect(ftpEntry.owner, equals('105'));
+    expect(ftpEntry.group, equals('108'));
+    expect(ftpEntry.size, equals(1024));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    var data2 = 'drw-------    1 105      108        1024 Jan 10 11:50 dir/';
+    ftpEntry = FTPEntry.parse(data2, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.DIR));
+
+    var data3 = ftpEntry.toString();
+    ftpEntry = FTPEntry.parse(data3, DIR_LIST_COMMAND.MLSD);
+    expect(ftpEntry.type, equals(FTPEntryType.DIR));
+    expect(ftpEntry.owner, equals('105'));
+    expect(ftpEntry.group, equals('108'));
+    expect(ftpEntry.size, equals(1024));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+  });
+
+  test('test FTPConnect exception', () {
+    String msgError = 'message';
+    String msgResponse = 'reply is here';
+    FTPException exception = FTPException(msgError);
+    expect(exception.message, equals(msgError));
+    exception = FTPException(msgError, msgResponse);
+    expect(exception.message, equals(msgError));
+    expect(exception.response, equals(msgResponse));
+    expect(exception.toString(),
+        equals('FTPException: $msgError (Response: $msgResponse)'));
+  });
 }
