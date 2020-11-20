@@ -34,9 +34,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
 
-      - run: pushd example
       - run: pushd example && flutter build apk --release --split-per-abi
-      - run: flutter build appbundle
+      - run: pushd example && flutter build appbundle
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
