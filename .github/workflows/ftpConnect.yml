@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: windows-latest
     steps:
       - name: Flutter action
         uses: subosito/flutter-action@v1.4.0
@@ -21,18 +21,18 @@ jobs:
         with:
           flutter-version: '1.22.4'
       - run: flutter pub get
-      - run: flutter format --dry-run --set-exit-if-changed .
-      - run: flutter analyze
+      #- run: flutter format --dry-run --set-exit-if-changed .
+      #- run: flutter analyze
 
       # run  flutter widgets tests  and unit tests
-      - run: flutter test --coverage
+      #- run: flutter test --coverage
         # Upload coverage reports to Codecov
         # https://github.com/marketplace/actions/codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage/lcov.info
+      #- name: Upload coverage to Codecov
+        #uses: codecov/codecov-action@v1
+        #with:
+         # token: ${{ secrets.CODECOV_TOKEN }}
+          #file: coverage/lcov.info
 
       - run: pushd example && flutter build apk --release --split-per-abi
       - run: pushd example && flutter build appbundle
