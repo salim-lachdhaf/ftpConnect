@@ -120,23 +120,23 @@ void main() {
         equals(true));
   });
 
-  test('test FTP Entry Class', () {
-    FTPEntry ftpEntry = FTPEntry(
-        "-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
-    expect(ftpEntry.persmission, equals('-rw-------'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-    expect(ftpEntry.name, equals('10000GB.ZIP'));
-  });
-
-  ///reference http://cr.yp.to/ftp/list/binls.html
-  ///-rw-r--r-- 1 owner group           213 Aug 26 16:31 FileName.txt
-  ///d for Dir
-  ///- for file
-  FTPEntry convert(String s) {
-    var data = s.split(" ").removeWhere((i) => i.trim().isEmpty);
-  }
+  // test('test FTP Entry Class', () {
+  //   FTPEntry ftpEntry = FTPEntry(
+  //       "-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
+  //   expect(ftpEntry.persmission, equals('-rw-------'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
+  // });
+  //
+  // ///reference http://cr.yp.to/ftp/list/binls.html
+  // ///-rw-r--r-- 1 owner group           213 Aug 26 16:31 FileName.txt
+  // ///d for Dir
+  // ///- for file
+  // FTPEntry convert(String s) {
+  //   var data = s.split(" ").removeWhere((i) => i.trim().isEmpty);
+  // }
 }
