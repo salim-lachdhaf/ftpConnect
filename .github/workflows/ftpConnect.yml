@@ -59,7 +59,7 @@ jobs:
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
       - name: Echo GITHUB_REF
-        run: echo $GITHUB_REF
+        run: echo ${{ secrets.GH_TOKEN }}
       - name: Create a Release APK
         uses: ncipollo/release-action@v1.7.3
         with:
