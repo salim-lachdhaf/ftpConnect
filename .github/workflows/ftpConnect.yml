@@ -3,8 +3,6 @@ name: build
 on:
   push:
     branches: [ master, dev ]
-    tags:
-      - '*'
   pull_request:
     branches: [ master, dev ]
 
@@ -50,7 +48,8 @@ jobs:
       - name: Create a Release APK
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*.apk"
+          artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
+          commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
       #
       ##- run: flutter build ios --release --no-codesign
