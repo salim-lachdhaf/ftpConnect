@@ -167,7 +167,7 @@ class FTPEntry {
 
   @override
   String toString() =>
-      'name=$name;modify=$modifyTime;perm=$persmission;type=${describeEnum(type).toLowerCase()};size=$size;unique=$unique;unix.group=$group;unix.mode=$mode;unix.owner=$owner';
+      'name=$name;modify=$modifyTime;perm=$persmission;type=${describeEnum(type).toLowerCase()};size=$size;unique=$unique;unix.group=$group;unix.mode=$mode;unix.owner=$owner;unix.uid=$uid;unix.gid=$gid';
 }
 
 enum FTPEntryType { FILE, DIR }
