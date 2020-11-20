@@ -62,6 +62,7 @@ jobs:
           artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
           tag: v0.1.7
           release_name: Release ${{ github.ref }}
+          commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
         #
         ##- run: flutter build ios --release --no-codesign
