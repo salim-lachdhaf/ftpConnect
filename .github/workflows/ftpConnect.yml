@@ -68,9 +68,9 @@ jobs:
           prerelease: true
           token: ${{ secrets.GH_TOKEN }}
         #
-        ##- run: flutter build ios --release --no-codesign
+        #- run: flutter build ios --release --no-codesign
         #
-        ## Upload generated apk to the artifacts.
+        # Upload generated apk to the artifacts
         - uses: actions/upload-artifact@v2
           with:
             name: release-apk
