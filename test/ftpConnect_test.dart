@@ -120,23 +120,63 @@ void main() {
         equals(true));
   });
 
-  // test('test FTP Entry Class', () {
-  //   FTPEntry ftpEntry = FTPEntry(
-  //       "-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
-  //   expect(ftpEntry.persmission, equals('-rw-------'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  //   expect(ftpEntry.name, equals('10000GB.ZIP'));
-  // });
-  //
-  // ///reference http://cr.yp.to/ftp/list/binls.html
-  // ///-rw-r--r-- 1 owner group           213 Aug 26 16:31 FileName.txt
-  // ///d for Dir
-  // ///- for file
-  // FTPEntry convert(String s) {
-  //   var data = s.split(" ").removeWhere((i) => i.trim().isEmpty);
-  // }
+  test('test FTP Entry Class', () {
+    FTPEntry ftpEntry = FTPEntry(
+        "-rw-------    1 105      108        402725 Nov 20 11:50 1000GB.zip");
+    expect(ftpEntry.persmission, equals('-rw-------'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+    expect(ftpEntry.name, equals('10000GB.ZIP'));
+  });
+
+  ///reference http://cr.yp.to/ftp/list/binls.html
+  ///-rw-r--r-- 1 owner group           213 Aug 26 16:31 FileName.txt
+  ///d for Dir
+  ///- for file
+  FTPEntry convert(String s) {
+    String _name;
+    DateTime _modifyTime;
+    String _persmission;
+    FTPEntryType _type;
+    int _size = 0;
+    String _unique;
+    String _group;
+    int _gid = -1;
+    String _mode;
+    String _owner;
+    int _uid = -1;
+
+    var data = s.split(" ")..removeWhere((i) => i.trim().isEmpty);
+    if (data.length < 9)
+      return FTPEntry.x(_name, _modifyTime, _persmission, _type, _size, _unique,
+          _group, _gid, _mode, _owner, _uid, Map.unmodifiable({}));
+
+    //permission and type in first
+    _type = data.first[0] == "-" ? FTPEntryType.FILE : FTPEntryType.DIR;
+    _persmission = data.first.substring(1);
+
+    //owner in third place
+    _owner = data[2];
+
+    //group in forth place
+    _group = data[3];
+
+    //size in fifth place
+    _size = int.tryParse(data[4]) ?? 0;
+
+    //date in six, seven and eight place
+    String date = '${data[5]}${data[6]}${data[7]}';
+    String day = data[5];
+    String month = data[6];
+    String year = data[7].contains(':') ? DateTime.now().year.toString() : data[7];
+    String time = !data[7].contains(':') ? null : data[7];
+
+    // _modifyTime =
+
+    //file name in the last
+    _name = data.last;
+  }
 }

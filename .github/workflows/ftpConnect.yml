@@ -35,10 +35,10 @@ jobs:
         # Upload coverage reports to Codecov
         # https://github.com/marketplace/actions/codecov
       - name: Upload coverage to Codecov
-          uses: codecov/codecov-action@v1
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            file: coverage/lcov.info
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
 
       - run: pushd example && flutter build apk --release --split-per-abi
       - run: pushd example && flutter build appbundle

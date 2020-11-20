@@ -15,7 +15,7 @@ class FTPEntry {
   final Map<String, String> additionalProperties;
 
   // Hide constructor
-  FTPEntry._(
+  FTPEntry.x(
       this.name,
       this.modifyTime,
       this.persmission,
@@ -99,7 +99,7 @@ class FTPEntry {
       }
     });
 
-    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
+    return FTPEntry.x(_name, _modifyTime, _persmission, _type, _size, _unique,
         _group, _gid, _mode, _owner, _uid, Map.unmodifiable(_additional));
   }
 
