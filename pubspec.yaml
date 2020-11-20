@@ -12,6 +12,7 @@ environment:
 dependencies:
   archive: ^2.0.13
   path: ^1.7.0
+  intl: ^0.16.1
   flutter:
     sdk: flutter
 
