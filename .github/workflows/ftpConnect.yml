@@ -62,7 +62,7 @@ jobs:
         uses: ncipollo/release-action@v1.7.3
         with:
           tag: v1.2.3
-          artifacts: "build/app/outputs/**/*.apk,build/app/outputs/bundle/release/*.aab"
+          artifacts: "build/app/outputs/*/*.apk,build/app/outputs/bundle/release/*.aab"
           commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
         #
@@ -73,6 +73,6 @@ jobs:
         with:
           name: release-apk
           path: |
-                build/app/outputs/**/*.apk
+                build/app/outputs/*/*.apk
                 build/app/outputs/bundle/release/*.aab
         
