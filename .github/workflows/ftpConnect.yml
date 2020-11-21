@@ -62,7 +62,7 @@ jobs:
         uses: ncipollo/release-action@v1.7.3
         with:
           tag: v1.2.3
-          artifacts: exemple/build/app/outputs/**/*.apk,exemple/build/app/outputs/bundle/release/*.aab
+          artifacts: example/build/app/outputs/**/*.apk,example/build/app/outputs/bundle/release/*.aab
           commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
         #
