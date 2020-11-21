@@ -58,12 +58,11 @@ jobs:
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
-      - run: pushd example
       - name: Create a Release APK
         uses: ncipollo/release-action@v1.7.3
         with:
           tag: v1.2.3
-          artifacts: build/app/outputs/**/*.apk,build/app/outputs/bundle/release/*.aab
+          artifacts: **/build/app/outputs/**/*.apk,**/build/app/outputs/bundle/release/*.aab
           commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
         #
