@@ -58,8 +58,8 @@ jobs:
 
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
+      - run: pushd example
       - name: Create a Release APK
-        run: pushd example
         uses: ncipollo/release-action@v1.7.3
         with:
           tag: v1.2.3
