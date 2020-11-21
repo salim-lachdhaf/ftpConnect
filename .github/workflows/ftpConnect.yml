@@ -59,20 +59,21 @@ jobs:
       # This action will create a github release and optionally upload an artifact to it.
       # https://github.com/ncipollo/release-action
       - name: Create a Release APK
+        run: pushd example
         uses: ncipollo/release-action@v1.7.3
         with:
           tag: v1.2.3
-          artifacts: ${{ github.workspace }}/**/build/app/outputs/**/*.apk,${{ github.workspace }}/**/build/app/outputs/bundle/release/*.aab
+          artifacts: build/app/outputs/**/*.apk,build/app/outputs/bundle/release/*.aab
           commit: ${{ github.sha }}
           token: ${{ secrets.GH_TOKEN }}
         #
         #- run: flutter build ios --release --no-codesign
         #
         # Upload generated apk to the artifacts
-      - uses: actions/upload-artifact@v2
-        with:
-          name: release-apk
-          path: |
-                ${{ github.workspace }}/**/build/app/outputs/**/*.apk
-                ${{ github.workspace }}/**/build/app/outputs/bundle/release/*.aab
+      #- uses: actions/upload-artifact@v2
+       # with:
+          #name: release-apk
+         # path: |
+                #${{ github.workspace }}/**/build/app/outputs/**/*.apk
+              #  ${{ github.workspace }}/**/build/app/outputs/bundle/release/*.aab
         
