@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master ]
     #tags:
       #- '*'
   pull_request:
@@ -37,6 +37,8 @@ jobs:
           file: coverage/lcov.info
 
   build_deploy:
+    #if conditional to prevent a job from running
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     name: build apks and deploy
     steps:
