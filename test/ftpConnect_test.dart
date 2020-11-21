@@ -119,4 +119,52 @@ void main() {
             File('$_testFileDir$_localZip'), _localUnZipDir) is List<String>,
         equals(true));
   });
+
+  test('test FTP Entry Class', () {
+    var data = '-rw-------    1 105      108        1024 Jan 10 11:50 file.zip';
+    FTPEntry ftpEntry = FTPEntry.parse(data, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.FILE));
+    expect(ftpEntry.persmission, equals('rw-------'));
+    expect(ftpEntry.name, equals('file.zip'));
+    expect(ftpEntry.owner, equals('105'));
+    expect(ftpEntry.group, equals('108'));
+    expect(ftpEntry.size, equals(1024));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    var data2 = 'drw-------    1 105      108        1024 Jan 10 11:50 dir/';
+    ftpEntry = FTPEntry.parse(data2, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.DIR));
+
+    var data3 = ftpEntry.toString();
+    ftpEntry = FTPEntry.parse(data3, DIR_LIST_COMMAND.MLSD);
+    expect(ftpEntry.type, equals(FTPEntryType.DIR));
+    expect(ftpEntry.owner, equals('105'));
+    expect(ftpEntry.group, equals('108'));
+    expect(ftpEntry.size, equals(1024));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    var data4 = 'drw-------    1 105';
+    ftpEntry = FTPEntry.parse(data4, DIR_LIST_COMMAND.MLSD);
+    expect(ftpEntry.name, equals(data4));
+    ftpEntry = FTPEntry.parse(data4, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry is FTPEntry, equals(true));
+
+    var data5;
+    expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.MLSD),
+        throwsA(isInstanceOf<FTPException>()));
+    expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.LIST),
+        throwsA(isInstanceOf<FTPException>()));
+  });
+
+  test('test FTPConnect exception', () {
+    String msgError = 'message';
+    String msgResponse = 'reply is here';
+    FTPException exception = FTPException(msgError);
+    expect(exception.message, equals(msgError));
+    exception = FTPException(msgError, msgResponse);
+    expect(exception.message, equals(msgError));
+    expect(exception.response, equals(msgResponse));
+    expect(exception.toString(),
+        equals('FTPException: $msgError (Response: $msgResponse)'));
+  });
 }

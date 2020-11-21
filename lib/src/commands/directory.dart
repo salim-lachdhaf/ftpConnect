@@ -76,7 +76,7 @@ class FTPDirectory {
     List<FTPEntry> lstFTPEntries = List<FTPEntry>();
     String.fromCharCodes(lstDirectoryListing).split('\n').forEach((line) {
       if (line.trim().isNotEmpty) {
-        lstFTPEntries.add(FTPEntry(line));
+        lstFTPEntries.add(FTPEntry.parse(line, cmd));
       }
     });
 
