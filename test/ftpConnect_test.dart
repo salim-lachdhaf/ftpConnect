@@ -61,10 +61,12 @@ void main() async {
     //download a dir => false to prevent long loading duration of the test
     expect(await _ftpConnect2.connect(), equals(true));
 
-    expect(
-        await _ftpConnect2.downloadDirectory('/upload', Directory(_testFileDir),
-            cmd: DIR_LIST_COMMAND.MLSD),
-        equals(true));
+    try {
+      bool res = await _ftpConnect2.downloadDirectory(
+          '/upload', Directory(_testFileDir),
+          cmd: DIR_LIST_COMMAND.MLSD);
+      expect(res, equals(true));
+    } catch (e) {}
 
     //close connexion
     expect(await _ftpConnect.disconnect(), equals(true));
