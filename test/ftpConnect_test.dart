@@ -1,3 +1,4 @@
+@Timeout(const Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:ftpconnect/ftpconnect.dart';
@@ -8,9 +9,9 @@ void main() async {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", debug: true);
   final FTPConnect _ftpConnect2 = new FTPConnect("demo.wftpserver.com",
-      user: "demo", pass: "demo", debug: true);
+      user: "demo", pass: "demo", debug: true, timeout: 60);
   final FTPConnect _ftpConnectNoLog = new FTPConnect("speedtest.tele2.net",
-      user: "anonymous", pass: "anonymous", debug: true);
+      user: "anonymous", pass: "anonymous", debug: false);
   const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
@@ -121,6 +122,15 @@ void main() async {
         await _ftpConnect.downloadFileWithRetry(
             '../512KB.zip', File('$_testFileDir$_localZip')),
         equals(true));
+
+    //download non exist file
+    try {
+      await _ftpConnect.downloadFileWithRetry(
+          '../51xx2KB.zip', File('$_testFileDir$_localZip'),
+          pRetryCount: 2);
+    } catch (e) {
+      assert(e is FTPException);
+    }
 
     //upload file
     expect(
