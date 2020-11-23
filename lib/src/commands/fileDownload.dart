@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import '../debug/debugLog.dart';
 import '../ftpExceptions.dart';
 import '../ftpSocket.dart';
-import '../debug/debugLog.dart';
 import '../util/transferUtil.dart';
 import 'file.dart';
 
@@ -33,7 +33,8 @@ class FileDownload {
     // Data Transfer Socket
     int iPort = TransferUtil.parsePort(sResponse);
     _log.log('Opening DataSocket to Port $iPort');
-    final Socket dataSocket = await Socket.connect(_socket.host, iPort);
+    final Socket dataSocket = await Socket.connect(_socket.host, iPort,
+        timeout: Duration(seconds: _socket.timeout));
     // Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 

@@ -1,3 +1,5 @@
+import 'package:ftpconnect/src/util/transferUtil.dart';
+
 import '../ftpSocket.dart';
 
 class FTPFile {
@@ -32,8 +34,15 @@ class FTPFile {
   Future<int> size(String sFilename) async {
     try {
       String sResponse = await _socket.sendCommand('SIZE $sFilename');
-      String size = sResponse.replaceAll('213 ', '');
-      return int.parse(size);
+      if (sResponse.startsWith('550')) {
+        //check if ascii mode get refused
+        //change to binary mode if ascii mode refused
+        await TransferUtil.setTransferMode(_socket, TransferMode.binary);
+        sResponse = await _socket.sendCommand('SIZE $sFilename');
+        //back to ascci mode
+        await TransferUtil.setTransferMode(_socket, TransferMode.ascii);
+      }
+      return int.parse(sResponse.replaceAll('213 ', ''));
     } catch (e) {
       return -1;
     }

@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/commands/directory.dart';
+import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:intl/intl.dart';
 
 class FTPEntry {
@@ -159,7 +159,7 @@ class FTPEntry {
     _modifyTime = DateFormat(formatDate).parse(date);
 
     //file name in the last
-    _name = data.last;
+    _name = data.last.replaceAll('\n', '').replaceAll('\r', '');
 
     return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
         _group, _gid, _mode, _owner, _uid, {});
@@ -167,7 +167,7 @@ class FTPEntry {
 
   @override
   String toString() =>
-      'name=$name;modify=$modifyTime;perm=$persmission;type=${describeEnum(type).toLowerCase()};size=$size;unique=$unique;unix.group=$group;unix.mode=$mode;unix.owner=$owner;unix.uid=$uid;unix.gid=$gid';
+      'name=$name;modify=$modifyTime;perm=$persmission;type=${type.describeEnum.toLowerCase()};size=$size;unique=$unique;unix.group=$group;unix.mode=$mode;unix.owner=$owner;unix.uid=$uid;unix.gid=$gid';
 }
 
 enum FTPEntryType { FILE, DIR }

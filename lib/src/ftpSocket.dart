@@ -10,11 +10,11 @@ class FTPSocket {
   final String host;
   final int port;
   final DebugLog _log;
-  final int _timeout;
+  final int timeout;
 
   RawSocket _socket;
 
-  FTPSocket(this.host, this.port, this._log, this._timeout);
+  FTPSocket(this.host, this.port, this._log, this.timeout);
 
   /// Read the FTP Server response from the Stream
   ///
@@ -28,7 +28,7 @@ class FTPSocket {
       }
       await Future.delayed(Duration(milliseconds: 200));
       return true;
-    }).timeout(Duration(seconds: _timeout), onTimeout: () {
+    }).timeout(Duration(seconds: timeout), onTimeout: () {
       throw FTPException('Timeout reached for Receiving response !');
     });
 
@@ -43,7 +43,8 @@ class FTPSocket {
     _socket.write(Utf8Codec().encode('$cmd\r\n'));
 
     if (waitResponse == true) {
-      return await readResponse();
+      var res = await readResponse();
+      return res;
     }
     return '';
   }
@@ -66,7 +67,7 @@ class FTPSocket {
   Future<bool> connect(String user, String pass) async {
     _log.log('Connecting...');
     _socket = await RawSocket.connect(host, port,
-        timeout: Duration(seconds: _timeout));
+        timeout: Duration(seconds: timeout));
 
     // Wait for Connect
     if (_socket == null) {
