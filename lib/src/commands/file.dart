@@ -34,7 +34,7 @@ class FTPFile {
   Future<int> size(String sFilename) async {
     try {
       String sResponse = await _socket.sendCommand('SIZE $sFilename');
-      if (sResponse.startsWith('550')) {
+      if (sResponse.startsWith('550')) {//check if ascii mode get refused
         //change to binary mode if ascii mode refused
         await TransferUtil.setTransferMode(_socket, TransferMode.binary);
         sResponse = await _socket.sendCommand('SIZE $sFilename');
