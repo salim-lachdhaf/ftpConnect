@@ -1,3 +1,5 @@
+## [0.1.9] - 2020.11.23
+* delete unused resource of test
 ## [0.1.8] - 2020.11.23
 * migration to pure dart
 * manage directory content command (LIST, MLSD)
