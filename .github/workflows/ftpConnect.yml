@@ -29,7 +29,7 @@ jobs:
 
   build_deploy:
     #if conditional to prevent a job from running
-    if: github.event_name == 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     name: deploy release
     steps:
