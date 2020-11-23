@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/dto/FTPEntry.dart';
+import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:ftpconnect/src/util/transferUtil.dart';
 
 import '../ftpExceptions.dart';
@@ -53,7 +53,7 @@ class FTPDirectory {
     String sResponse = await TransferUtil.enterPassiveMode(_socket);
 
     // Directoy content listing, the response will be handled by another socket
-    await _socket.sendCommand(describeEnum(cmd ?? DIR_LIST_COMMAND.MLSD),
+    await _socket.sendCommand((cmd ?? DIR_LIST_COMMAND.MLSD).describeEnum,
         waitResponse: false);
 
     // Data transfer socket

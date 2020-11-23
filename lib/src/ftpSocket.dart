@@ -43,7 +43,8 @@ class FTPSocket {
     _socket.write(Utf8Codec().encode('$cmd\r\n'));
 
     if (waitResponse == true) {
-      return await readResponse();
+      var res = await readResponse();
+      return res;
     }
     return '';
   }

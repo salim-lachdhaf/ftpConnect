@@ -1,18 +1,21 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/commands/directory.dart';
+import 'package:test/test.dart';
 
-void main() {
+void main() async {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
+      user: "anonymous", pass: "anonymous", debug: true);
+  final FTPConnect _ftpConnect2 = new FTPConnect("demo.wftpserver.com",
+      user: "demo", pass: "demo", debug: true);
+  final FTPConnect _ftpConnectNoLog = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", debug: true);
   const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
   const String _localZip = 'testZip.zip';
-  const String _localUnZipDir = 'testUnZip';
-  TestWidgetsFlutterBinding.ensureInitialized();
+  const String _localUnZipDir = 'test/testUnZip';
 
   ///mock a file for the demonstration example
   Future<File> _fileMock({fileName = _localUploadFile}) async {
@@ -26,6 +29,11 @@ void main() {
   test('test ftpConnect', () async {
     expect(await _ftpConnect.connect(), equals(true));
     expect(await _ftpConnect.disconnect(), equals(true));
+  });
+
+  test('test ftpConnect No log', () async {
+    expect(await _ftpConnectNoLog.connect(), equals(true));
+    expect(await _ftpConnectNoLog.disconnect(), equals(true));
   });
 
   test('test ftpConnect Dir functions', () async {
@@ -51,11 +59,12 @@ void main() {
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));
 
     //download a dir => false to prevent long loading duration of the test
+    expect(await _ftpConnect2.connect(), equals(true));
+
     expect(
-        () async => await _ftpConnect.downloadDirectory(
-            'nonExstanceDir', Directory(_testFileDir),
-            cmd: DIR_LIST_COMMAND.LIST),
-        throwsA(isInstanceOf<FTPException>()));
+        await _ftpConnect2.downloadDirectory('/upload', Directory(_testFileDir),
+            cmd: DIR_LIST_COMMAND.MLSD),
+        equals(true));
 
     //close connexion
     expect(await _ftpConnect.disconnect(), equals(true));
@@ -69,6 +78,7 @@ void main() {
 
     //test upload file (this file will be automatically deleted after upload by the server)
     expect(await _ftpConnect.uploadFile(await _fileMock()), equals(true));
+
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
     //test download file
@@ -76,8 +86,19 @@ void main() {
         await _ftpConnect.downloadFile(
             '../512KB.zip', File('$_testFileDir$_localDownloadFile')),
         equals(true));
+
+    //test download non exist file
+    var remoteFile = 'notExist.zip';
+    try {
+      await _ftpConnect.downloadFile(remoteFile, File('dist'));
+    } catch (e) {
+      expect(e is FTPException, equals(true));
+      expect(
+          e.message == 'Remote File $remoteFile does not exist!', equals(true));
+    }
     //get file size
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));
+    expect(await _ftpConnect.sizeFile('../notExist.zip'), equals(-1));
     //test delete file (false because the server is protected)
     expect(await _ftpConnect.deleteFile('../512KB.zip'), equals(false));
 
@@ -110,7 +131,8 @@ void main() {
     //zip file
     expect(
         await FTPConnect.zipFiles(
-            ['test/$_localUploadFile'], '$_testFileDir$_localZip'),
+            ['$_testFileDir$_localUploadFile', _testFileDir],
+            '$_testFileDir$_localZip'),
         equals(true));
 
     //test unzip
@@ -151,9 +173,9 @@ void main() {
 
     var data5;
     expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.MLSD),
-        throwsA(isInstanceOf<FTPException>()));
+        throwsA(isA<FTPException>()));
     expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.LIST),
-        throwsA(isInstanceOf<FTPException>()));
+        throwsA(isA<FTPException>()));
   });
 
   test('test FTPConnect exception', () {
