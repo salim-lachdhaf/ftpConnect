@@ -22,7 +22,7 @@ jobs:
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
           with:
-            path: packages/bloc/coverage/lcov.info
+            path: coverage/lcov.info
         # Upload coverage reports to Codecov
         # https://github.com/marketplace/actions/codecov
       - name: Upload coverage to Codecov
