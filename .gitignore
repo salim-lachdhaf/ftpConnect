@@ -38,6 +38,10 @@ coverage_badge.svg
 *.lcov
 nohup.out
 
+#test file
+test/testResFiles/
+test/testUnZip/
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
