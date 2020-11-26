@@ -57,6 +57,7 @@ void main() async {
 
     //delete directory => false because the folder is protected
     expect(await _ftpConnect.deleteEmptyDirectory("upload"), equals(false));
+    expect(await _ftpConnect.deleteDirectory("upload"), equals(false));
 
     //make directory => false because the folder is protected
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));

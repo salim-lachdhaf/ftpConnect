@@ -82,7 +82,8 @@ class FTPConnect {
   /// Returns `true` if the directory was deleted successfully
   /// Returns `false` if the directory could not be deleted or does not nexist
   /// THIS USEFUL TO DELETE NON EMPTY DIRECTORY
-  Future<bool> deleteDirectory(String sDirectory, DIR_LIST_COMMAND cmd) async {
+  Future<bool> deleteDirectory(String sDirectory,
+      {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
     String currentDir = await this.currentDirectory();
     if (!await this.changeDirectory(sDirectory)) {
       throw FTPException("Couldn't change directory to $sDirectory");
@@ -94,7 +95,7 @@ class FTPConnect {
           throw FTPException("Couldn't delete file ${entry.name}");
         }
       } else {
-        if (!await deleteDirectory(entry.name, cmd)) {
+        if (!await deleteDirectory(entry.name, cmd: cmd)) {
           throw FTPException("Couldn't delete folder ${entry.name}");
         }
       }
