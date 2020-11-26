@@ -10,8 +10,7 @@ void main() async {
       user: "anonymous", pass: "anonymous", debug: true);
   final FTPConnect _ftpConnect2 = new FTPConnect("demo.wftpserver.com",
       user: "demo", pass: "demo", debug: true, timeout: 60);
-  final FTPConnect _ftpConnectNoLog = new FTPConnect("speedtest.tele2.net",
-      user: "anonymous", pass: "anonymous", debug: false);
+
   const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';
   const String _localDownloadFile = 'test_download.txt';
@@ -33,14 +32,41 @@ void main() async {
   });
 
   test('test ftpConnect No log', () async {
+    final FTPConnect _ftpConnectNoLog = new FTPConnect("speedtest.tele2.net",
+        user: "anonymous", pass: "anonymous", debug: false);
     expect(await _ftpConnectNoLog.connect(), equals(true));
     expect(await _ftpConnectNoLog.disconnect(), equals(true));
+  });
+
+  test('test ftpConnect timeOut', () async {
+    final FTPConnect _ftpConnectTimeOut =
+        new FTPConnect("speedtest.tele2.net", user: "xxxx", pass: "xxxx");
+
+    expect(() async => await _ftpConnectTimeOut.connect(),
+        throwsA(isA<FTPException>()));
+  });
+
+  test('test ftpConnect error connect', () async {
+    FTPConnect _ftpConnectErrorConnect =
+        new FTPConnect("demo.wftpserver.com", user: "xxxx", pass: "xxxx");
+    try {
+      await _ftpConnectErrorConnect.connect();
+    } catch (e) {
+      expect(e is FTPException, equals(true));
+    }
+    _ftpConnectErrorConnect = new FTPConnect("xxxx.wwww.com");
+    try {
+      await _ftpConnectErrorConnect.connect();
+    } catch (e) {
+      expect(e is FTPException, equals(true));
+    }
   });
 
   test('test ftpConnect Dir functions', () async {
     expect(await _ftpConnect.connect(), equals(true));
 
     expect(await _ftpConnect.currentDirectory(), equals("/"));
+
     //make sure that the folder does not exist
     expect(await _ftpConnect.checkFolderExistence("NoName"), equals(false));
     //create a new dir NoName (Fails because we do not have permissions)

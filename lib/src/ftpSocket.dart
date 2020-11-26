@@ -66,12 +66,13 @@ class FTPSocket {
   /// Connect to the FTP Server and Login with [user] and [pass]
   Future<bool> connect(String user, String pass) async {
     _log.log('Connecting...');
-    _socket = await RawSocket.connect(host, port,
-        timeout: Duration(seconds: timeout));
 
-    // Wait for Connect
-    if (_socket == null) {
-      throw FTPException('Could not connect to $host ($port)');
+    try {
+      _socket = await RawSocket.connect(host, port,
+          timeout: Duration(seconds: timeout));
+    } catch (e) {
+      throw FTPException(
+          'Could not connect to $host ($port)', e?.toString() ?? '');
     }
 
     // Send Username
