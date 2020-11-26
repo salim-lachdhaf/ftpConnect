@@ -29,9 +29,15 @@
 .pub-cache/
 .pub/
 build/
-coverage/
 lib/generated_plugin_registrant.dart
 pubspec.lock
+
+# Coverage
+coverage/
+coverage_badge.svg
+.test_coverage.dart
+*.lcov
+nohup.out
 
 # Android related
 **/android/**/gradle-wrapper.jar
