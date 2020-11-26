@@ -40,7 +40,7 @@ void main() async {
 
   test('test ftpConnect timeOut', () async {
     final FTPConnect _ftpConnectTimeOut =
-        new FTPConnect("speedtest.tele2.net", user: "xxxx", pass: "xxxx");
+        new FTPConnect("speedtest.tele2.net", user: "xxxcx", pass: "xxxx");
 
     expect(() async => await _ftpConnectTimeOut.connect(),
         throwsA(isA<FTPException>()));
