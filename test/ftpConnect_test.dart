@@ -57,7 +57,13 @@ void main() async {
 
     //delete directory => false because the folder is protected
     expect(await _ftpConnect.deleteEmptyDirectory("upload"), equals(false));
-    expect(await _ftpConnect.deleteDirectory("upload"), equals(false));
+    //try delete a non epty dir => crash because permission denied
+    try {
+      await _ftpConnect.deleteDirectory("../upload",
+          cmd: DIR_LIST_COMMAND.LIST);
+    } catch (e) {
+      expect(e is FTPException, equals(true));
+    }
 
     //make directory => false because the folder is protected
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));

@@ -59,7 +59,7 @@ class FTPDirectory {
     // Data transfer socket
     int iPort = TransferUtil.parsePort(sResponse);
     Socket dataSocket = await Socket.connect(_socket.host, iPort,
-        timeout: Duration(seconds: 30));
+        timeout: Duration(seconds: _socket.timeout));
     //Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 
