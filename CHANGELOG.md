@@ -1,3 +1,8 @@
+## [0.1.9] - 2020.11.23
+* delete unused resource of test
+## [0.1.8] - 2020.11.23
+* migration to pure dart
+* manage directory content command (LIST, MLSD)
 ## [0.1.7] - 2020.11.18
 * migration to embedding Android
 * fix bug [#3](https://github.com/salim-lachdhaf/ftpConnect/issues/3)
