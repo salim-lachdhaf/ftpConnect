@@ -23,19 +23,15 @@ class TransferUtil {
   }
 
   /// Parse the Passive Mode Port from the Servers [sResponse]
+  /// port format (|||xxxxx|)
   static int parsePort(String sResponse) {
     int iParOpen = sResponse.indexOf('(');
     int iParClose = sResponse.indexOf(')');
 
-    if (iParClose > -1) {
-      sResponse = sResponse.substring(iParOpen + 1, iParClose);
+    if (iParClose > -1 && iParOpen > -1) {
+      sResponse = sResponse.substring(iParOpen + 4, iParClose - 1);
     }
-    List<String> lstParameters = sResponse.split(',');
-
-    int iPort1 = int.parse(lstParameters[lstParameters.length - 2]);
-    int iPort2 = int.parse(lstParameters[lstParameters.length - 1]);
-
-    return (iPort1 * 256) + iPort2;
+    return int.tryParse(sResponse);
   }
 
   ///retry a function [retryCount] times, until exceed [retryCount] or execute the function successfully
@@ -98,8 +94,8 @@ class TransferUtil {
 
   ///Tell the socket [socket] that we will enter in passive mode
   static Future<String> enterPassiveMode(FTPSocket socket) async {
-    String sResponse = await socket.sendCommand('PASV');
-    if (!sResponse.startsWith('227')) {
+    String sResponse = await socket.sendCommand('EPSV');
+    if (!sResponse.startsWith('229')) {
       throw FTPException('Could not start Passive Mode', sResponse);
     }
     return sResponse;

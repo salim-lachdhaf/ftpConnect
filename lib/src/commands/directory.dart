@@ -20,8 +20,8 @@ class FTPDirectory {
     return sResponse.startsWith('257');
   }
 
-  Future<bool> deleteDirectory(String sName) async {
-    String sResponse = await _socket.sendCommand('RMD $sName');
+  Future<bool> deleteEmptyDirectory(String sName) async {
+    String sResponse = await _socket.sendCommand('rmd $sName');
 
     return sResponse.startsWith('250');
   }
@@ -58,7 +58,8 @@ class FTPDirectory {
 
     // Data transfer socket
     int iPort = TransferUtil.parsePort(sResponse);
-    Socket dataSocket = await Socket.connect(_socket.host, iPort);
+    Socket dataSocket = await Socket.connect(_socket.host, iPort,
+        timeout: Duration(seconds: 30));
     //Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 
@@ -76,12 +77,19 @@ class FTPDirectory {
     List<FTPEntry> lstFTPEntries = List<FTPEntry>();
     String.fromCharCodes(lstDirectoryListing).split('\n').forEach((line) {
       if (line.trim().isNotEmpty) {
-        lstFTPEntries.add(FTPEntry.parse(line, cmd));
+        lstFTPEntries.add(FTPEntry.parse(line.replaceAll('\r', ""), cmd));
       }
     });
 
     return lstFTPEntries;
   }
+
+  Future<List<String>> listDirectoryContentOnlyNames() async {
+    var list = await listDirectoryContent(cmd: DIR_LIST_COMMAND.NLST);
+    return list.map((f) => f.name).toList();
+  }
 }
 
-enum DIR_LIST_COMMAND { LIST, MLSD }
+///Note that [LIST] and [MLSD] return content detailed
+///BUT [NLST] return only dir/file names inside the given directory
+enum DIR_LIST_COMMAND { NLST, LIST, MLSD }

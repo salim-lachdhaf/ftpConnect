@@ -42,8 +42,8 @@ class FileDownload {
 
     var sink = fLocalFile.openWrite(mode: FileMode.writeOnly);
     await sink.addStream(dataSocket.asBroadcastStream());
-    sink.flush();
-    sink.close();
+    await sink.flush();
+    await sink.close();
     await dataSocket.close();
 
     //Test if All data are well transferred

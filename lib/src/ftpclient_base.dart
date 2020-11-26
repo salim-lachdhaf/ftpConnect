@@ -73,8 +73,34 @@ class FTPConnect {
   ///
   /// Returns `true` if the directory was deleted successfully
   /// Returns `false` if the directory could not be deleted or does not nexist
-  Future<bool> deleteDirectory(String sDirectory) {
-    return FTPDirectory(_socket).deleteDirectory(sDirectory);
+  Future<bool> deleteEmptyDirectory(String sDirectory) {
+    return FTPDirectory(_socket).deleteEmptyDirectory(sDirectory);
+  }
+
+  /// Deletes the Directory with the Name of [sDirectory] in the current directory.
+  ///
+  /// Returns `true` if the directory was deleted successfully
+  /// Returns `false` if the directory could not be deleted or does not nexist
+  /// THIS USEFUL TO DELETE NON EMPTY DIRECTORY
+  Future<bool> deleteDirectory(String sDirectory, DIR_LIST_COMMAND cmd) async {
+    String currentDir = await this.currentDirectory();
+    if (!await this.changeDirectory(sDirectory)) {
+      throw FTPException("Couldn't change directory to $sDirectory");
+    }
+    List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
+    await Future.forEach(dirContent, (FTPEntry entry) async {
+      if (entry.type == FTPEntryType.FILE) {
+        if (!await deleteFile(entry.name)) {
+          throw FTPException("Couldn't delete file ${entry.name}");
+        }
+      } else {
+        if (!await deleteDirectory(entry.name, cmd)) {
+          throw FTPException("Couldn't delete folder ${entry.name}");
+        }
+      }
+    });
+    await this.changeDirectory(currentDir);
+    return await deleteEmptyDirectory(sDirectory);
   }
 
   /// Change into the Directory with the Name of [sDirectory] within the current directory.
@@ -96,6 +122,13 @@ class FTPConnect {
   /// with MLSD and other with LIST
   Future<List<FTPEntry>> listDirectoryContent({DIR_LIST_COMMAND cmd}) {
     return FTPDirectory(_socket).listDirectoryContent(cmd: cmd);
+  }
+
+  /// Returns the content names of the current directory
+  /// [cmd] refer to the used command for the server, there is servers working
+  /// with MLSD and other with LIST for detailed content
+  Future<List<String>> listDirectoryContentOnlyNames() {
+    return FTPDirectory(_socket).listDirectoryContentOnlyNames();
   }
 
   /// Rename a file (or directory) from [sOldName] to [sNewName]
@@ -158,26 +191,25 @@ class FTPConnect {
       {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
     Future<bool> downloadDir(String pRemoteDir, Directory pLocalDir) async {
       //read remote directory content
-      if (await this.changeDirectory(pRemoteDir)) {
-        List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
-        await Future.forEach(dirContent, (FTPEntry entry) async {
-          if (entry.type == FTPEntryType.FILE) {
-            File localFile = File(join(pLocalDir.path, entry.name));
-            await downloadFile(entry.name, localFile);
-          } else if (entry.type == FTPEntryType.DIR) {
-            //create a local directory
-            var localDir = await Directory(join(pLocalDir.path, entry.name))
-                .create(recursive: true);
-            await downloadDir(entry.name, localDir);
-            //back to current folder
-            await this.changeDirectory('..');
-          }
-        });
-        return true;
-      } else {
+      if (!await this.changeDirectory(pRemoteDir)) {
         throw FTPException('Cannot download directory',
             '$pRemoteDir not found or inaccessible !');
       }
+      List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
+      await Future.forEach(dirContent, (FTPEntry entry) async {
+        if (entry.type == FTPEntryType.FILE) {
+          File localFile = File(join(pLocalDir.path, entry.name));
+          await downloadFile(entry.name, localFile);
+        } else if (entry.type == FTPEntryType.DIR) {
+          //create a local directory
+          var localDir = await Directory(join(pLocalDir.path, entry.name))
+              .create(recursive: true);
+          await downloadDir(entry.name, localDir);
+          //back to current folder
+          await this.changeDirectory('..');
+        }
+      });
+      return true;
     }
 
     Future<bool> downloadDirRetry() async {

@@ -52,9 +52,11 @@ void main() async {
         (await _ftpConnect.listDirectoryContent(cmd: DIR_LIST_COMMAND.LIST))
             is List<FTPEntry>,
         equals(true));
+    expect((await _ftpConnect.listDirectoryContentOnlyNames()) is List<String>,
+        equals(true));
 
     //delete directory => false because the folder is protected
-    expect(await _ftpConnect.deleteDirectory("upload"), equals(false));
+    expect(await _ftpConnect.deleteEmptyDirectory("upload"), equals(false));
 
     //make directory => false because the folder is protected
     expect(await _ftpConnect.makeDirectory("upload2"), equals(false));
@@ -155,6 +157,7 @@ void main() async {
   });
 
   test('test FTP Entry Class', () {
+    //test LIST COMMAND with standard response
     var data = '-rw-------    1 105      108        1024 Jan 10 11:50 file.zip';
     FTPEntry ftpEntry = FTPEntry.parse(data, DIR_LIST_COMMAND.LIST);
     expect(ftpEntry.type, equals(FTPEntryType.FILE));
@@ -163,6 +166,19 @@ void main() async {
     expect(ftpEntry.owner, equals('105'));
     expect(ftpEntry.group, equals('108'));
     expect(ftpEntry.size, equals(1024));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    //test LIS COMMAND with IIS servers
+    data = '02-11-15  03:05PM      <DIR>     1410887680 directory';
+    ftpEntry = FTPEntry.parse(data, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.DIR));
+    expect(ftpEntry.name, equals('directory'));
+    expect(ftpEntry.modifyTime is DateTime, equals(true));
+
+    data = '02-11-15  03:05PM               1410887680 directory';
+    ftpEntry = FTPEntry.parse(data, DIR_LIST_COMMAND.LIST);
+    expect(ftpEntry.type, equals(FTPEntryType.FILE));
+    expect(ftpEntry.name, equals('directory'));
     expect(ftpEntry.modifyTime is DateTime, equals(true));
 
     var data2 = 'drw-------    1 105      108        1024 Jan 10 11:50 dir/';
