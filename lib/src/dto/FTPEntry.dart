@@ -160,7 +160,9 @@ class FTPEntry {
     if (responseLine == null || responseLine.trim().isEmpty)
       throw FTPException('Can\'t create instance from empty information');
     if (!regexpLIST.hasMatch(responseLine))
-      throw FTPException('Invalid format for LIST command response !');
+      throw FTPException(
+          'Invalid format <$responseLine> for LIST command response !');
+
     String _name;
     DateTime _modifyTime;
     String _persmission;
@@ -211,7 +213,8 @@ class FTPEntry {
       throw FTPException('Can\'t create instance from empty information');
     }
     if (!regexpLISTSiiServers.hasMatch(responseLine))
-      throw FTPException('Invalid format for LIST command response !');
+      throw FTPException(
+          'Invalid format <$responseLine> for LIST command response !');
 
     String _name;
     DateTime _modifyTime;

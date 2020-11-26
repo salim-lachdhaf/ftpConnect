@@ -196,8 +196,8 @@ void main() async {
     var data4 = 'drw-------    1 105';
     ftpEntry = FTPEntry.parse(data4, DIR_LIST_COMMAND.MLSD);
     expect(ftpEntry.name, equals(data4));
-    ftpEntry = FTPEntry.parse(data4, DIR_LIST_COMMAND.LIST);
-    expect(ftpEntry is FTPEntry, equals(true));
+    expect(() => FTPEntry.parse(data4, DIR_LIST_COMMAND.LIST),
+        throwsA(isA<FTPException>()));
 
     var data5;
     expect(() => FTPEntry.parse(data5, DIR_LIST_COMMAND.MLSD),
