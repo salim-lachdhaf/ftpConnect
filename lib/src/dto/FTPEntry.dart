@@ -1,5 +1,4 @@
 import 'package:ftpconnect/ftpconnect.dart';
-import 'package:ftpconnect/src/commands/directory.dart';
 import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:intl/intl.dart';
 
