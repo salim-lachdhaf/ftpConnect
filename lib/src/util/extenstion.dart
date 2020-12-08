@@ -1,5 +1,4 @@
 import 'package:ftpconnect/ftpconnect.dart';
-import 'package:ftpconnect/src/commands/directory.dart';
 
 extension CommandListTypeEnum on DIR_LIST_COMMAND {
   String get describeEnum =>

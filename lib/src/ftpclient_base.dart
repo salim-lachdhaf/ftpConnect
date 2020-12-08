@@ -298,3 +298,8 @@ class FTPConnect {
     return lPaths;
   }
 }
+
+///Note that [LIST] and [MLSD] return content detailed
+///BUT [NLST] return only dir/file names inside the given directory
+enum DIR_LIST_COMMAND { NLST, LIST, MLSD }
+enum TransferMode { ascii, binary }
