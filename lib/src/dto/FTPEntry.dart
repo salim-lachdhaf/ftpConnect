@@ -233,7 +233,7 @@ class FTPEntry {
         //keep only one space and add fullyear if only last 2 digits in year
         if (element.isEmpty) return previousValue;
         if (previousValue.isEmpty)
-          return element.length <= 8 ? element.substring(0, 6) + "20" + element.substring(6, 8) : element;
+          return element.length <= 8 ? element.substring(0, 6) + DateTime.now().year.toString().substring(0,2) + element.substring(6, 8) : element;
         return '$previousValue $element';
       });
       _modifyTime = DateFormat('MM-dd-yyyy hh:mma').parse(date);
