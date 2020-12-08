@@ -1,4 +1,5 @@
 import 'package:ftpconnect/ftpconnect.dart';
+import 'package:ftpconnect/src/commands/directory.dart';
 import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:intl/intl.dart';
 
@@ -33,26 +34,14 @@ class FTPEntry {
       );
 
   // Hide constructor
-  FTPEntry._(
-      this.name,
-      this.modifyTime,
-      this.persmission,
-      this.type,
-      this.size,
-      this.unique,
-      this.group,
-      this.gid,
-      this.mode,
-      this.owner,
-      this.uid,
-      this.additionalProperties);
+  FTPEntry._(this.name, this.modifyTime, this.persmission, this.type, this.size, this.unique, this.group, this.gid,
+      this.mode, this.owner, this.uid, this.additionalProperties);
 
   factory FTPEntry.parse(String responseLine, DIR_LIST_COMMAND cmd) {
     if (cmd == DIR_LIST_COMMAND.LIST)
       return FTPEntry._parseListCommand(responseLine);
     else if (cmd == DIR_LIST_COMMAND.NLST)
-      return FTPEntry._(responseLine, null, null, null, null, null, null, null,
-          null, null, null, null);
+      return FTPEntry._(responseLine, null, null, null, null, null, null, null, null, null, null, null);
     else
       return FTPEntry._parseMLSDCommand(responseLine);
   }
@@ -77,10 +66,7 @@ class FTPEntry {
 
     // Split and trim line
     responseLine.trim().split(';').forEach((property) {
-      final prop = property
-          .split('=')
-          .map((part) => part.trim())
-          .toList(growable: false);
+      final prop = property.split('=').map((part) => part.trim()).toList(growable: false);
 
       if (prop.length == 1) {
         // Name
@@ -89,8 +75,7 @@ class FTPEntry {
         // Other attributes
         switch (prop[0].toLowerCase()) {
           case 'modify':
-            final String date =
-                prop[1].substring(0, 8) + 'T' + prop[1].substring(8);
+            final String date = prop[1].substring(0, 8) + 'T' + prop[1].substring(8);
             _modifyTime = DateTime.tryParse(prop[1]) ?? DateTime.tryParse(date);
             break;
           case 'perm':
@@ -132,8 +117,8 @@ class FTPEntry {
       }
     });
 
-    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
-        _group, _gid, _mode, _owner, _uid, Map.unmodifiable(_additional));
+    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique, _group, _gid, _mode, _owner, _uid,
+        Map.unmodifiable(_additional));
   }
 
   ///reference http://cr.yp.to/ftp/list/binls.html
@@ -159,8 +144,7 @@ class FTPEntry {
     if (responseLine == null || responseLine.trim().isEmpty)
       throw FTPException('Can\'t create instance from empty information');
     if (!regexpLIST.hasMatch(responseLine))
-      throw FTPException(
-          'Invalid format <$responseLine> for LIST command response !');
+      throw FTPException('Invalid format <$responseLine> for LIST command response !');
 
     String _name;
     DateTime _modifyTime;
@@ -194,8 +178,7 @@ class FTPEntry {
       //size
       _size = int.tryParse(match.group(6)) ?? 0;
       //date
-      String date = (match.group(7).split(" ")..removeWhere((i) => i.isEmpty))
-          .join(" "); //keep only one space
+      String date = (match.group(7).split(" ")..removeWhere((i) => i.isEmpty)).join(" "); //keep only one space
       //insert year
       if (date.contains(':')) date = '$date ${DateTime.now().year}';
       var format = date.contains(':') ? 'MMM dd hh:mm yyyy' : 'MMM dd yyyy';
@@ -203,8 +186,7 @@ class FTPEntry {
       //file/dir name
       _name = match.group(8);
     }
-    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
-        _group, _gid, _mode, _owner, _uid, {});
+    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique, _group, _gid, _mode, _owner, _uid, {});
   }
 
   factory FTPEntry._parseLISTiis(final String responseLine) {
@@ -212,8 +194,7 @@ class FTPEntry {
       throw FTPException('Can\'t create instance from empty information');
     }
     if (!regexpLISTSiiServers.hasMatch(responseLine))
-      throw FTPException(
-          'Invalid format <$responseLine> for LIST command response !');
+      throw FTPException('Invalid format <$responseLine> for LIST command response !');
 
     String _name;
     DateTime _modifyTime;
@@ -233,7 +214,9 @@ class FTPEntry {
         //keep only one space and add fullyear if only last 2 digits in year
         if (element.isEmpty) return previousValue;
         if (previousValue.isEmpty)
-          return element.length <= 8 ? element.substring(0, 6) + DateTime.now().year.toString().substring(0,2) + element.substring(6, 8) : element;
+          return element.length <= 8
+              ? element.substring(0, 6) + DateTime.now().year.toString().substring(0, 2) + element.substring(6, 8)
+              : element;
         return '$previousValue $element';
       });
       _modifyTime = DateFormat('MM-dd-yyyy hh:mma').parse(date);
@@ -252,8 +235,7 @@ class FTPEntry {
       //file/dir name
       _name = match.group(4);
     }
-    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
-        _group, _gid, _mode, _owner, _uid, {});
+    return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique, _group, _gid, _mode, _owner, _uid, {});
   }
 
   @override
