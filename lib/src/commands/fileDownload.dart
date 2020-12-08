@@ -15,7 +15,8 @@ class FileDownload {
   /// File Download Command
   FileDownload(this._socket, this._mode, this._log);
 
-  Future<bool> downloadFile(String sRemoteName, File fLocalFile, {Function(int bytesReceived) onProgress}) async {
+  Future<bool> downloadFile(String sRemoteName, File fLocalFile,
+      {Function(int bytesReceived) onProgress}) async {
     _log.log('Download $sRemoteName to ${fLocalFile.path}');
 
     if (!await FTPFile(_socket).exist(sRemoteName)) {
