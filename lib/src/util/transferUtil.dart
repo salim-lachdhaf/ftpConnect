@@ -6,8 +6,7 @@ import '../ftpSocket.dart';
 
 class TransferUtil {
   /// Set the Transfer mode on [socket] to [mode]
-  static Future<void> setTransferMode(
-      FTPSocket socket, TransferMode mode) async {
+  static Future<void> setTransferMode(FTPSocket socket, TransferMode mode) async {
     switch (mode) {
       case TransferMode.ascii:
         // Set to ASCII mode
@@ -101,3 +100,5 @@ class TransferUtil {
     return sResponse;
   }
 }
+
+enum TransferMode { ascii, binary }

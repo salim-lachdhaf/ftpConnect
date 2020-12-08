@@ -30,11 +30,7 @@ class FTPConnect {
   /// [debug]: Enable Debug Logging
   /// [timeout]: Timeout in seconds to wait for responses
   FTPConnect(String host,
-      {int port = 21,
-      String user = 'anonymous',
-      String pass = '',
-      bool debug = false,
-      int timeout = 30})
+      {int port = 21, String user = 'anonymous', String pass = '', bool debug = false, int timeout = 30})
       : _user = user,
         _pass = pass,
         _log = debug ? PrintLog() : NoOpLogger() {
@@ -50,8 +46,7 @@ class FTPConnect {
   Future<bool> disconnect() => _socket.disconnect();
 
   /// Upload the File [fFile] to the current directory
-  Future<bool> uploadFile(File fFile,
-      {String sRemoteName = '', TransferMode mode = TransferMode.binary}) {
+  Future<bool> uploadFile(File fFile, {String sRemoteName = '', TransferMode mode = TransferMode.binary}) {
     return FileUpload(_socket, mode, _log).uploadFile(fFile, sRemoteName);
   }
 
@@ -82,8 +77,7 @@ class FTPConnect {
   /// Returns `true` if the directory was deleted successfully
   /// Returns `false` if the directory could not be deleted or does not nexist
   /// THIS USEFUL TO DELETE NON EMPTY DIRECTORY
-  Future<bool> deleteDirectory(String sDirectory,
-      {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
+  Future<bool> deleteDirectory(String sDirectory, {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
     String currentDir = await this.currentDirectory();
     if (!await this.changeDirectory(sDirectory)) {
       throw FTPException("Couldn't change directory to $sDirectory");
@@ -160,8 +154,7 @@ class FTPConnect {
   /// this strategy can be used when we don't need to go step by step
   /// (connect -> upload -> disconnect) or there is a need for a number of attemps
   /// in case of a poor connexion for example
-  Future<bool> uploadFileWithRetry(File fileToUpload,
-      {String pRemoteName = '', int pRetryCount = 1}) {
+  Future<bool> uploadFileWithRetry(File fileToUpload, {String pRemoteName = '', int pRetryCount = 1}) {
     Future<bool> uploadFileRetry() async {
       bool res = await this.uploadFile(fileToUpload, sRemoteName: pRemoteName);
       return res;
@@ -176,8 +169,7 @@ class FTPConnect {
   /// this strategy can be used when we don't need to go step by step
   /// (connect -> download -> disconnect) or there is a need for a number of attempts
   /// in case of a poor connexion for example
-  Future<bool> downloadFileWithRetry(String pRemoteName, File pLocalFile,
-      {int pRetryCount = 1}) {
+  Future<bool> downloadFileWithRetry(String pRemoteName, File pLocalFile, {int pRetryCount = 1}) {
     Future<bool> downloadFileRetry() async {
       bool res = await this.downloadFile(pRemoteName, pLocalFile);
       return res;
@@ -188,13 +180,11 @@ class FTPConnect {
 
   /// Download the Remote Directory [pRemoteDir] to the local File [pLocalDir]
   /// [pRetryCount] number of attempts
-  Future<bool> downloadDirectory(String pRemoteDir, Directory pLocalDir,
-      {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
+  Future<bool> downloadDirectory(String pRemoteDir, Directory pLocalDir, {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
     Future<bool> downloadDir(String pRemoteDir, Directory pLocalDir) async {
       //read remote directory content
       if (!await this.changeDirectory(pRemoteDir)) {
-        throw FTPException('Cannot download directory',
-            '$pRemoteDir not found or inaccessible !');
+        throw FTPException('Cannot download directory', '$pRemoteDir not found or inaccessible !');
       }
       List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
       await Future.forEach(dirContent, (FTPEntry entry) async {
@@ -203,8 +193,7 @@ class FTPConnect {
           await downloadFile(entry.name, localFile);
         } else if (entry.type == FTPEntryType.DIR) {
           //create a local directory
-          var localDir = await Directory(join(pLocalDir.path, entry.name))
-              .create(recursive: true);
+          var localDir = await Directory(join(pLocalDir.path, entry.name)).create(recursive: true);
           await downloadDir(entry.name, localDir);
           //back to current folder
           await this.changeDirectory('..');
@@ -244,8 +233,7 @@ class FTPConnect {
   ///Return true if files compression is finished successfully
   ///[paths] list of files and directories paths to be compressed into a Zip file
   ///[destinationZipFile] full path of destination zip file
-  static Future<bool> zipFiles(
-      List<String> paths, String destinationZipFile) async {
+  static Future<bool> zipFiles(List<String> paths, String destinationZipFile) async {
     var encoder = ZipFileEncoder();
     encoder.create(destinationZipFile);
     for (String path in paths) {
@@ -264,11 +252,9 @@ class FTPConnect {
   ///[zipFile] file to decompress
   ///[destinationPath] local directory path where the zip file will be extracted
   ///[password] optional: use password if the zip is crypted
-  static Future<List<String>> unZipFile(File zipFile, String destinationPath,
-      {password}) async {
+  static Future<List<String>> unZipFile(File zipFile, String destinationPath, {password}) async {
     //path should ends with '/'
-    if (destinationPath != null && !destinationPath.endsWith('/'))
-      destinationPath += '/';
+    if (destinationPath != null && !destinationPath.endsWith('/')) destinationPath += '/';
     //list that will be returned with extracted paths
     final List<String> lPaths = List();
 
@@ -296,8 +282,3 @@ class FTPConnect {
     return lPaths;
   }
 }
-
-///Note that [LIST] and [MLSD] return content detailed
-///BUT [NLST] return only dir/file names inside the given directory
-enum DIR_LIST_COMMAND { NLST, LIST, MLSD }
-enum TransferMode { ascii, binary }
