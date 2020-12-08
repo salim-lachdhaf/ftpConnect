@@ -54,12 +54,12 @@ class FTPDirectory {
 
     // Directoy content listing, the response will be handled by another socket
     await _socket.sendCommand((cmd ?? DIR_LIST_COMMAND.MLSD).describeEnum,
-     waitResponse: false);
+        waitResponse: false);
 
     // Data transfer socket
     int iPort = TransferUtil.parsePort(sResponse);
     Socket dataSocket = await Socket.connect(_socket.host, iPort, 
-    timeout: Duration(seconds: _socket.timeout));
+        timeout: Duration(seconds: _socket.timeout));
     //Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 

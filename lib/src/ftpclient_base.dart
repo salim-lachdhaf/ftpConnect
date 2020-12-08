@@ -51,13 +51,13 @@ class FTPConnect {
 
   /// Upload the File [fFile] to the current directory
   Future<bool> uploadFile(File fFile,
-  {String sRemoteName = '', TransferMode mode = TransferMode.binary}) {
+      {String sRemoteName = '', TransferMode mode = TransferMode.binary}) {
     return FileUpload(_socket, mode, _log).uploadFile(fFile, sRemoteName);
   }
 
   /// Download the Remote File [sRemoteName] to the local File [fFile]
   Future<bool> downloadFile(String sRemoteName, File fFile,
-      {TransferMode mode = TransferMode.binary, Function onProgress}) {
+      {TransferMode mode = TransferMode.binary, Function(int bytesReceived) onProgress}) {
     return FileDownload(_socket, mode, _log).downloadFile(sRemoteName, fFile, onProgress: onProgress);
   }
 
@@ -83,7 +83,7 @@ class FTPConnect {
   /// Returns `false` if the directory could not be deleted or does not nexist
   /// THIS USEFUL TO DELETE NON EMPTY DIRECTORY
   Future<bool> deleteDirectory(String sDirectory,
-  {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
+      {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
     String currentDir = await this.currentDirectory();
     if (!await this.changeDirectory(sDirectory)) {
       throw FTPException("Couldn't change directory to $sDirectory");
@@ -161,7 +161,7 @@ class FTPConnect {
   /// (connect -> upload -> disconnect) or there is a need for a number of attemps
   /// in case of a poor connexion for example
   Future<bool> uploadFileWithRetry(File fileToUpload,
-  {String pRemoteName = '', int pRetryCount = 1}) {
+      {String pRemoteName = '', int pRetryCount = 1}) {
     Future<bool> uploadFileRetry() async {
       bool res = await this.uploadFile(fileToUpload, sRemoteName: pRemoteName);
       return res;
@@ -177,7 +177,7 @@ class FTPConnect {
   /// (connect -> download -> disconnect) or there is a need for a number of attempts
   /// in case of a poor connexion for example
   Future<bool> downloadFileWithRetry(String pRemoteName, File pLocalFile,
-  {int pRetryCount = 1}) {
+      {int pRetryCount = 1}) {
     Future<bool> downloadFileRetry() async {
       bool res = await this.downloadFile(pRemoteName, pLocalFile);
       return res;
@@ -194,7 +194,7 @@ class FTPConnect {
       //read remote directory content
       if (!await this.changeDirectory(pRemoteDir)) {
         throw FTPException('Cannot download directory',
-        '$pRemoteDir not found or inaccessible !');
+            '$pRemoteDir not found or inaccessible !');
       }
       List<FTPEntry> dirContent = await this.listDirectoryContent(cmd: cmd);
       await Future.forEach(dirContent, (FTPEntry entry) async {

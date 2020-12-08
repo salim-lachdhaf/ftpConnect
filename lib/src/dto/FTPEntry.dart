@@ -34,18 +34,18 @@ class FTPEntry {
 
   // Hide constructor
   FTPEntry._(
-    this.name,
-    this.modifyTime,
-    this.persmission,
-    this.type,
-    this.size,
-    this.unique,
-    this.group,
-    this.gid,
-    this.mode,
-    this.owner,
-    this.uid,
-    this.additionalProperties);
+      this.name,
+      this.modifyTime,
+      this.persmission,
+      this.type,
+      this.size,
+      this.unique,
+      this.group,
+      this.gid,
+      this.mode,
+      this.owner,
+      this.uid,
+      this.additionalProperties);
 
   factory FTPEntry.parse(String responseLine, DIR_LIST_COMMAND cmd) {
     if (cmd == DIR_LIST_COMMAND.LIST)
