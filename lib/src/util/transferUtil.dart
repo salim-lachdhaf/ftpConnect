@@ -101,5 +101,3 @@ class TransferUtil {
     return sResponse;
   }
 }
-
-enum TransferMode { ascii, binary }

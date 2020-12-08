@@ -100,7 +100,7 @@ main() {
 ###Directory functions:
 ```dart
 //Get directory content
-ftpConnect.listDirectoryContent();
+ftpConnect.listDirectoryContent({LISTDIR_LIST_COMMAND cmd=LISTDIR_LIST_COMMAND.MLSD});
 
 //Create directory
 ftpConnect.makeDirectory('newDir');

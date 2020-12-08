@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
+import '../../ftpconnect.dart';
 import '../ftpSocket.dart';
 import '../debug/debugLog.dart';
 import '../util/transferUtil.dart';
