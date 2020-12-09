@@ -1,3 +1,5 @@
+## [0.2.1] - 2020.12.09
+* add onProgress callBack for download and upload file
 ## [0.2.0] - 2020.11.26
 * add delete feature for non empty directory
 * fix bug [#7](https://github.com/salim-lachdhaf/ftpConnect/issues/3)
