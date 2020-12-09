@@ -106,7 +106,7 @@ void main() async {
 
     try {
       bool res = await _ftpConnect2.downloadDirectory(
-          '/upload', Directory(_testFileDir),
+          '/upload', Directory(_testFileDir)..createSync(),
           cmd: DIR_LIST_COMMAND.MLSD);
       expect(res, equals(true));
     } catch (e) {}
