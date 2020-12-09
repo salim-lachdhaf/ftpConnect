@@ -1,3 +1,8 @@
+## [0.2.0] - 2020.11.26
+* add delete feature for non empty directory
+* fix bug [#7](https://github.com/salim-lachdhaf/ftpConnect/issues/3)
+* add new command "NLST" to list file/dir inside a directory
+* handle IIS servers LIST command response
 ## [0.1.9] - 2020.11.23
 * delete unused resource of test
 ## [0.1.8] - 2020.11.23

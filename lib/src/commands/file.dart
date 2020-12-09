@@ -1,3 +1,4 @@
+import 'package:ftpconnect/ftpconnect.dart';
 import 'package:ftpconnect/src/util/transferUtil.dart';
 
 import '../ftpSocket.dart';

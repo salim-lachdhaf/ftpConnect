@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:ftpconnect/ftpconnect.dart';
-import 'package:ftpconnect/src/commands/directory.dart';
 import 'package:test/test.dart';
 
 void main() async {

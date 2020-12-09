@@ -1,5 +1,4 @@
 import 'package:ftpconnect/ftpconnect.dart';
-import 'package:ftpconnect/src/commands/directory.dart';
 import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:intl/intl.dart';
 
@@ -230,8 +229,18 @@ class FTPEntry {
     Iterable<Match> matches = regexpLISTSiiServers.allMatches(responseLine);
     for (Match match in matches) {
       //date
-      String date = (match.group(1).split(" ")..removeWhere((i) => i.isEmpty))
-          .join(" "); //keep only one space
+      String date =
+          match.group(1).split(" ").fold('', (previousValue, element) {
+        //keep only one space and add fullyear if only last 2 digits in year
+        if (element.isEmpty) return previousValue;
+        if (previousValue.isEmpty)
+          return element.length <= 8
+              ? element.substring(0, 6) +
+                  DateTime.now().year.toString().substring(0, 2) +
+                  element.substring(6, 8)
+              : element;
+        return '$previousValue $element';
+      });
       _modifyTime = DateFormat('MM-dd-yyyy hh:mma').parse(date);
 
       //type

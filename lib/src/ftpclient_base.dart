@@ -57,8 +57,10 @@ class FTPConnect {
 
   /// Download the Remote File [sRemoteName] to the local File [fFile]
   Future<bool> downloadFile(String sRemoteName, File fFile,
-      {TransferMode mode = TransferMode.binary}) {
-    return FileDownload(_socket, mode, _log).downloadFile(sRemoteName, fFile);
+      {TransferMode mode = TransferMode.binary,
+      Function(int bytesReceived) onProgress}) {
+    return FileDownload(_socket, mode, _log)
+        .downloadFile(sRemoteName, fFile, onProgress: onProgress);
   }
 
   /// Create a new Directory with the Name of [sDirectory] in the current directory.
@@ -296,3 +298,8 @@ class FTPConnect {
     return lPaths;
   }
 }
+
+///Note that [LIST] and [MLSD] return content detailed
+///BUT [NLST] return only dir/file names inside the given directory
+enum DIR_LIST_COMMAND { NLST, LIST, MLSD }
+enum TransferMode { ascii, binary }
