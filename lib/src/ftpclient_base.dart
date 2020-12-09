@@ -51,14 +51,16 @@ class FTPConnect {
 
   /// Upload the File [fFile] to the current directory
   Future<bool> uploadFile(File fFile,
-      {String sRemoteName = '', TransferMode mode = TransferMode.binary}) {
-    return FileUpload(_socket, mode, _log).uploadFile(fFile, sRemoteName);
+      {String sRemoteName = '',
+      TransferMode mode = TransferMode.binary,
+      FileProgress onProgress}) {
+    return FileUpload(_socket, mode, _log)
+        .uploadFile(fFile, remoteName: sRemoteName, onProgress: onProgress);
   }
 
   /// Download the Remote File [sRemoteName] to the local File [fFile]
   Future<bool> downloadFile(String sRemoteName, File fFile,
-      {TransferMode mode = TransferMode.binary,
-      Function(int bytesReceived) onProgress}) {
+      {TransferMode mode = TransferMode.binary, FileProgress onProgress}) {
     return FileDownload(_socket, mode, _log)
         .downloadFile(sRemoteName, fFile, onProgress: onProgress);
   }

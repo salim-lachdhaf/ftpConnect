@@ -16,7 +16,7 @@ jobs:
         run: pub get
 
       - run: dartfmt --dry-run --set-exit-if-changed .
-      - run: dartanalyzer --enable-experiment=non-nullable --fatal-infos --fatal-warnings lib test
+      - run: dartanalyzer .
       # run  flutter widgets tests  and unit tests
       - run: dart test --coverage=coverage && pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
         # Upload coverage reports to Codecov

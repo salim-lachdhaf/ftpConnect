@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import '../../ftpconnect.dart';
@@ -6,6 +7,8 @@ import '../ftpExceptions.dart';
 import '../ftpSocket.dart';
 import '../util/transferUtil.dart';
 import 'file.dart';
+
+typedef void FileProgress(double progress, int totalLength);
 
 class FileDownload {
   final FTPSocket _socket;
@@ -16,10 +19,12 @@ class FileDownload {
   FileDownload(this._socket, this._mode, this._log);
 
   Future<bool> downloadFile(String sRemoteName, File fLocalFile,
-      {Function(int bytesReceived) onProgress}) async {
+      {FileProgress onProgress}) async {
     _log.log('Download $sRemoteName to ${fLocalFile.path}');
-
-    if (!await FTPFile(_socket).exist(sRemoteName)) {
+    //check for file existence and init totalData to receive
+    int fileSize = 0;
+    fileSize = await FTPFile(_socket).size(sRemoteName);
+    if (fileSize == -1) {
       throw FTPException('Remote File $sRemoteName does not exist!');
     }
 
@@ -43,9 +48,17 @@ class FileDownload {
     // Changed to listen mode instead so that it's possible to send information back on downloaded amount
     var sink = fLocalFile.openWrite(mode: FileMode.writeOnly);
     _log.log('Start downloading...');
+    var received = 0;
     await dataSocket.listen((data) {
       sink.add(data);
-      if (onProgress != null) onProgress(data.length);
+      if (onProgress != null) {
+        received += data.length;
+        var percent = ((received / fileSize) * 100).toStringAsFixed(2);
+        //in case that the file size is 0, then pass directly 100
+        double percentVal = double.tryParse(percent) ?? 100;
+        if (percentVal.isInfinite || percentVal.isNaN) percentVal = 100;
+        onProgress(percentVal, received);
+      }
     }).asFuture();
 
     await dataSocket.close();

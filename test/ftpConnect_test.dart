@@ -122,14 +122,20 @@ void main() async {
     expect(await _ftpConnect.currentDirectory(), equals("/upload"));
 
     //test upload file (this file will be automatically deleted after upload by the server)
-    expect(await _ftpConnect.uploadFile(await _fileMock()), equals(true));
+    void testUploadProgress(double p, int r) {
+      print('uploaded :$r byte =========> $p%');
+    }
+    expect(await _ftpConnect.uploadFile(await _fileMock(),onProgress: testUploadProgress), equals(true));
 
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
     //test download file
+    void testDownloadProgress(double p, int r) {
+      print('downloaded :$r byte =========> $p%');
+    }
     expect(
         await _ftpConnect.downloadFile(
-            '../512KB.zip', File('$_testFileDir$_localDownloadFile')),
+            '../512KB.zip', File('$_testFileDir$_localDownloadFile'), onProgress: testDownloadProgress),
         equals(true));
 
     //test download non exist file

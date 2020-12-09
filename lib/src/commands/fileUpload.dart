@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 import '../../ftpconnect.dart';
-import '../ftpSocket.dart';
 import '../debug/debugLog.dart';
+import '../ftpSocket.dart';
 import '../util/transferUtil.dart';
+import 'fileDownload.dart';
 
 class FileUpload {
   final FTPSocket _socket;
@@ -15,8 +16,9 @@ class FileUpload {
   /// File Upload Command
   FileUpload(this._socket, this._mode, this._log);
 
-  /// Upload File [fFile] to the current directory with [sRemoteName] (using filename if not set)
-  Future<bool> uploadFile(File fFile, [String sRemoteName = '']) async {
+  /// Upload File [fFile] to the current directory with [remoteName] (using filename if not set)
+  Future<bool> uploadFile(File fFile,
+      {String remoteName = '', FileProgress onProgress}) async {
     _log.log('Upload File: ${fFile.path}');
 
     // Transfer Mode
@@ -26,7 +28,7 @@ class FileUpload {
     String sResponse = await TransferUtil.enterPassiveMode(_socket);
 
     // Store File
-    String sFilename = sRemoteName;
+    String sFilename = remoteName;
     if (sFilename == null || sFilename.isEmpty) {
       sFilename = basename(fFile.path);
     }
@@ -41,8 +43,22 @@ class FileUpload {
     //Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 
+    _log.log('Start uploading...');
     final readStream = fFile.openRead();
-    await dataSocket.addStream(readStream);
+    var received = 0;
+    int fileSize = await fFile.length();
+    await readStream.listen((data) {
+      dataSocket.add(data);
+      if (onProgress != null) {
+        received += data.length;
+        var percent = ((received / fileSize) * 100).toStringAsFixed(2);
+        //in case that the file size is 0, then pass directly 100
+        double percentVal = double.tryParse(percent) ?? 100;
+        if (percentVal.isInfinite || percentVal.isNaN) percentVal = 100;
+        onProgress(percentVal, received);
+      }
+    }).asFuture();
+
     await dataSocket.close();
 
     // Test if All data are well transferred
