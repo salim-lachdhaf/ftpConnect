@@ -125,7 +125,11 @@ void main() async {
     void testUploadProgress(double p, int r) {
       print('uploaded :$r byte =========> $p%');
     }
-    expect(await _ftpConnect.uploadFile(await _fileMock(),onProgress: testUploadProgress), equals(true));
+
+    expect(
+        await _ftpConnect.uploadFile(await _fileMock(),
+            onProgress: testUploadProgress),
+        equals(true));
 
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
@@ -133,9 +137,11 @@ void main() async {
     void testDownloadProgress(double p, int r) {
       print('downloaded :$r byte =========> $p%');
     }
+
     expect(
         await _ftpConnect.downloadFile(
-            '../512KB.zip', File('$_testFileDir$_localDownloadFile'), onProgress: testDownloadProgress),
+            '../512KB.zip', File('$_testFileDir$_localDownloadFile'),
+            onProgress: testDownloadProgress),
         equals(true));
 
     //test download non exist file
