@@ -89,7 +89,3 @@ class FTPDirectory {
     return list.map((f) => f.name).toList();
   }
 }
-
-///Note that [LIST] and [MLSD] return content detailed
-///BUT [NLST] return only dir/file names inside the given directory
-enum DIR_LIST_COMMAND { NLST, LIST, MLSD }
