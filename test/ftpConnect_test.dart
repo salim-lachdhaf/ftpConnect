@@ -18,8 +18,7 @@ void main() async {
 
   ///mock a file for the demonstration example
   Future<File> _fileMock({fileName = _localUploadFile}) async {
-    final Directory directory = Directory(_testFileDir)
-      ..createSync(recursive: true);
+    final Directory directory = Directory(_testFileDir);
     final File file = File('${directory.path}/$fileName');
     await file.writeAsString(DateTime.now().toString());
     return file;
@@ -110,6 +109,14 @@ void main() async {
           cmd: DIR_LIST_COMMAND.MLSD);
       expect(res, equals(true));
     } catch (e) {}
+
+    try {
+      await _ftpConnect2.downloadDirectory(
+          '/nonExist', Directory(_testFileDir)..createSync(),
+          cmd: DIR_LIST_COMMAND.MLSD);
+    } catch (e) {
+      expect(e is FTPException, equals(true));
+    }
 
     //close connexion
     expect(await _ftpConnect.disconnect(), equals(true));

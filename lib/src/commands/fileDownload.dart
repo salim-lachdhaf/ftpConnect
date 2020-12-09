@@ -61,9 +61,9 @@ class FileDownload {
       }
     }).asFuture();
 
-    await dataSocket.close();
     await sink.flush();
     await sink.close();
+    await dataSocket.close();
 
     //Test if All data are well transferred
     await TransferUtil.checkTransferOK(_socket, sResponse);

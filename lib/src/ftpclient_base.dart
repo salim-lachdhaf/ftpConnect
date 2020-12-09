@@ -195,6 +195,8 @@ class FTPConnect {
   Future<bool> downloadDirectory(String pRemoteDir, Directory pLocalDir,
       {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
     Future<bool> downloadDir(String pRemoteDir, Directory pLocalDir) async {
+      await pLocalDir.create(recursive: true);
+
       //read remote directory content
       if (!await this.changeDirectory(pRemoteDir)) {
         throw FTPException('Cannot download directory',
