@@ -9,12 +9,13 @@ import '../ftpconnect.dart';
 class FTPSocket {
   final String host;
   final int port;
+  final bool secured;
   final DebugLog _log;
   final int timeout;
 
   RawSocket _socket;
 
-  FTPSocket(this.host, this.port, this._log, this.timeout);
+  FTPSocket(this.host, this.port, this.secured, this._log, this.timeout);
 
   /// Read the FTP Server response from the Stream
   ///
@@ -68,8 +69,19 @@ class FTPSocket {
     _log.log('Connecting...');
 
     try {
-      _socket = await RawSocket.connect(host, port,
-          timeout: Duration(seconds: timeout));
+      if (secured == true)
+        _socket = await RawSecureSocket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeout),
+          onBadCertificate: ((X509Certificate cert) => true),
+        );
+      else
+        _socket = await RawSocket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeout),
+        );
     } catch (e) {
       throw FTPException(
           'Could not connect to $host ($port)', e?.toString() ?? '');

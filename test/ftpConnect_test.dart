@@ -8,7 +8,7 @@ void main() async {
   final FTPConnect _ftpConnect = new FTPConnect("speedtest.tele2.net",
       user: "anonymous", pass: "anonymous", debug: true);
   final FTPConnect _ftpConnect2 = new FTPConnect("demo.wftpserver.com",
-      user: "demo", pass: "demo", debug: true, timeout: 60);
+      user: "demo", pass: "demo",  isSecured:true, debug: true, timeout: 60);
 
   const String _testFileDir = 'test/testResFiles/';
   const String _localUploadFile = 'test_upload.txt';

@@ -44,7 +44,7 @@ class FileUpload {
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 
     _log.log('Start uploading...');
-    final readStream = fFile.openRead();
+    Stream readStream = fFile.openRead();
     var received = 0;
     int fileSize = await fFile.length();
     await readStream.listen((data) {
@@ -59,6 +59,7 @@ class FileUpload {
       }
     }).asFuture();
 
+    readStream = null;
     await dataSocket.close();
 
     // Test if All data are well transferred

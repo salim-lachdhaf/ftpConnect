@@ -33,12 +33,13 @@ class FTPConnect {
       {int port = 21,
       String user = 'anonymous',
       String pass = '',
+      bool isSecured = false,
       bool debug = false,
       int timeout = 30})
       : _user = user,
         _pass = pass,
         _log = debug ? PrintLog() : NoOpLogger() {
-    _socket = FTPSocket(host, port, _log, timeout);
+    _socket = FTPSocket(host, port, isSecured, _log, timeout);
   }
 
   /// Connect to the FTP Server

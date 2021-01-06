@@ -1,3 +1,10 @@
+## [0.2.1-sslTest2] - 2020.12.31
+* Test ssl and Tls beta version
+## [0.2.1-sslTest] - 2020.12.31
+* Test ssl and Tls beta version
+* fix bug [#18](https://github.com/salim-lachdhaf/ftpConnect/issues/18)
+## [0.2.1] - 2020.12.09
+* add onProgress callBack for download and upload file
 ## [0.2.0] - 2020.11.26
 * add delete feature for non empty directory
 * fix bug [#7](https://github.com/salim-lachdhaf/ftpConnect/issues/3)

@@ -151,6 +151,7 @@ FTPConnect.unZipFile(File zipFile, String destinationPath, {password});
 |`port`|Port number (Defaults to 21)|
 |`user`|Username (Defaults to anonymous)|
 |`pass`|Password if not anonymous login|
+|`isSecured`|set it to true if your sever uses SSL or TLS, default is false|
 |`debug`|Enable Debug Logging|
 |`timeout`|Timeout in seconds to wait for responses (Defaults to 30)|
 
