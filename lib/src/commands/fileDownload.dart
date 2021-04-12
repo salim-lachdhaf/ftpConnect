@@ -11,15 +11,15 @@ import 'file.dart';
 typedef void FileProgress(double progress, int totalLength);
 
 class FileDownload {
-  final FTPSocket _socket;
+  final FTPSocket? _socket;
   final TransferMode _mode;
   final DebugLog _log;
 
   /// File Download Command
   FileDownload(this._socket, this._mode, this._log);
 
-  Future<bool> downloadFile(String sRemoteName, File fLocalFile,
-      {FileProgress onProgress}) async {
+  Future<bool> downloadFile(String? sRemoteName, File fLocalFile,
+      {FileProgress? onProgress}) async {
     _log.log('Download $sRemoteName to ${fLocalFile.path}');
     //check for file existence and init totalData to receive
     int fileSize = 0;
@@ -32,18 +32,18 @@ class FileDownload {
     await TransferUtil.setTransferMode(_socket, _mode);
 
     // Enter passive mode
-    String sResponse = await TransferUtil.enterPassiveMode(_socket);
+    String sResponse = await TransferUtil.enterPassiveMode(_socket!);
 
     //the response will be the file, witch will be loaded with another socket
-    await _socket.sendCommand('RETR $sRemoteName', waitResponse: false);
+    await _socket!.sendCommand('RETR $sRemoteName', waitResponse: false);
 
     // Data Transfer Socket
-    int iPort = TransferUtil.parsePort(sResponse);
+    int iPort = TransferUtil.parsePort(sResponse)!;
     _log.log('Opening DataSocket to Port $iPort');
-    final Socket dataSocket = await Socket.connect(_socket.host, iPort,
-        timeout: Duration(seconds: _socket.timeout));
+    final Socket dataSocket = await Socket.connect(_socket!.host, iPort,
+        timeout: Duration(seconds: _socket!.timeout));
     // Test if second socket connection accepted or not
-    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
+    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket!);
 
     // Changed to listen mode instead so that it's possible to send information back on downloaded amount
     var sink = fLocalFile.openWrite(mode: FileMode.writeOnly);

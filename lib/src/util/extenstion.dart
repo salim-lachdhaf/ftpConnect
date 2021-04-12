@@ -5,7 +5,7 @@ extension CommandListTypeEnum on DIR_LIST_COMMAND {
       this.toString().substring(this.toString().indexOf('.') + 1);
 }
 
-extension FtpEntryTypeEnum on FTPEntryType {
+extension FtpEntryTypeEnum on FTPEntryType? {
   String get describeEnum =>
       this.toString().substring(this.toString().indexOf('.') + 1);
 }

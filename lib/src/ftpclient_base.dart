@@ -18,7 +18,7 @@ import 'ftpSocket.dart';
 class FTPConnect {
   final String _user;
   final String _pass;
-  FTPSocket _socket;
+  late FTPSocket _socket;
   final DebugLog _log;
 
   /// Create a FTP Client instance
@@ -53,14 +53,14 @@ class FTPConnect {
   Future<bool> uploadFile(File fFile,
       {String sRemoteName = '',
       TransferMode mode = TransferMode.binary,
-      FileProgress onProgress}) {
+      FileProgress? onProgress}) {
     return FileUpload(_socket, mode, _log)
         .uploadFile(fFile, remoteName: sRemoteName, onProgress: onProgress);
   }
 
   /// Download the Remote File [sRemoteName] to the local File [fFile]
-  Future<bool> downloadFile(String sRemoteName, File fFile,
-      {TransferMode mode = TransferMode.binary, FileProgress onProgress}) {
+  Future<bool> downloadFile(String? sRemoteName, File fFile,
+      {TransferMode mode = TransferMode.binary, FileProgress? onProgress}) {
     return FileDownload(_socket, mode, _log)
         .downloadFile(sRemoteName, fFile, onProgress: onProgress);
   }
@@ -77,7 +77,7 @@ class FTPConnect {
   ///
   /// Returns `true` if the directory was deleted successfully
   /// Returns `false` if the directory could not be deleted or does not nexist
-  Future<bool> deleteEmptyDirectory(String sDirectory) {
+  Future<bool> deleteEmptyDirectory(String? sDirectory) {
     return FTPDirectory(_socket).deleteEmptyDirectory(sDirectory);
   }
 
@@ -86,7 +86,7 @@ class FTPConnect {
   /// Returns `true` if the directory was deleted successfully
   /// Returns `false` if the directory could not be deleted or does not nexist
   /// THIS USEFUL TO DELETE NON EMPTY DIRECTORY
-  Future<bool> deleteDirectory(String sDirectory,
+  Future<bool> deleteDirectory(String? sDirectory,
       {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
     String currentDir = await this.currentDirectory();
     if (!await this.changeDirectory(sDirectory)) {
@@ -113,7 +113,7 @@ class FTPConnect {
   /// Use `..` to navigate back
   /// Returns `true` if the directory was changed successfully
   /// Returns `false` if the directory could not be changed (does not exist, no permissions or another error)
-  Future<bool> changeDirectory(String sDirectory) {
+  Future<bool> changeDirectory(String? sDirectory) {
     return FTPDirectory(_socket).changeDirectory(sDirectory);
   }
 
@@ -125,7 +125,7 @@ class FTPConnect {
   /// Returns the content of the current directory
   /// [cmd] refer to the used command for the server, there is servers working
   /// with MLSD and other with LIST
-  Future<List<FTPEntry>> listDirectoryContent({DIR_LIST_COMMAND cmd}) {
+  Future<List<FTPEntry>> listDirectoryContent({DIR_LIST_COMMAND? cmd}) {
     return FTPDirectory(_socket).listDirectoryContent(cmd: cmd);
   }
 
@@ -142,7 +142,7 @@ class FTPConnect {
   }
 
   /// Delete the file [sFilename] from the server
-  Future<bool> deleteFile(String sFilename) {
+  Future<bool> deleteFile(String? sFilename) {
     return FTPFile(_socket).delete(sFilename);
   }
 
@@ -193,8 +193,8 @@ class FTPConnect {
   /// Download the Remote Directory [pRemoteDir] to the local File [pLocalDir]
   /// [pRetryCount] number of attempts
   Future<bool> downloadDirectory(String pRemoteDir, Directory pLocalDir,
-      {DIR_LIST_COMMAND cmd, int pRetryCount = 1}) {
-    Future<bool> downloadDir(String pRemoteDir, Directory pLocalDir) async {
+      {DIR_LIST_COMMAND? cmd, int pRetryCount = 1}) {
+    Future<bool> downloadDir(String? pRemoteDir, Directory pLocalDir) async {
       await pLocalDir.create(recursive: true);
 
       //read remote directory content
@@ -273,10 +273,9 @@ class FTPConnect {
   static Future<List<String>> unZipFile(File zipFile, String destinationPath,
       {password}) async {
     //path should ends with '/'
-    if (destinationPath != null && !destinationPath.endsWith('/'))
-      destinationPath += '/';
+    if (!destinationPath.endsWith('/')) destinationPath += '/';
     //list that will be returned with extracted paths
-    final List<String> lPaths = List();
+    final List<String> lPaths = [];
 
     // Read the Zip file from disk.
     final bytes = await zipFile.readAsBytes();

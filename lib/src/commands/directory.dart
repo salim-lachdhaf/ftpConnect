@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -10,24 +11,24 @@ import '../ftpExceptions.dart';
 import '../ftpSocket.dart';
 
 class FTPDirectory {
-  final FTPSocket _socket;
+  late final FTPSocket _socket;
 
   FTPDirectory(this._socket);
 
   Future<bool> makeDirectory(String sName) async {
-    String sResponse = await _socket.sendCommand('MKD $sName');
+    String sResponse = await (_socket.sendCommand('MKD $sName'));
 
     return sResponse.startsWith('257');
   }
 
-  Future<bool> deleteEmptyDirectory(String sName) async {
-    String sResponse = await _socket.sendCommand('rmd $sName');
+  Future<bool> deleteEmptyDirectory(String? sName) async {
+    String sResponse = await (_socket.sendCommand('rmd $sName'));
 
     return sResponse.startsWith('250');
   }
 
-  Future<bool> changeDirectory(String sName) async {
-    String sResponse = await _socket.sendCommand('CWD $sName');
+  Future<bool> changeDirectory(String? sName) async {
+    String sResponse = await (_socket.sendCommand('CWD $sName'));
 
     return sResponse.startsWith('250');
   }
@@ -45,7 +46,7 @@ class FTPDirectory {
   }
 
   Future<List<FTPEntry>> listDirectoryContent(
-      {DIR_LIST_COMMAND cmd = DIR_LIST_COMMAND.MLSD}) async {
+      {DIR_LIST_COMMAND? cmd = DIR_LIST_COMMAND.MLSD}) async {
     // Transfer mode
     await TransferUtil.setTransferMode(_socket, TransferMode.ascii);
 
@@ -57,13 +58,13 @@ class FTPDirectory {
         waitResponse: false);
 
     // Data transfer socket
-    int iPort = TransferUtil.parsePort(sResponse);
+    int iPort = TransferUtil.parsePort(sResponse)!;
     Socket dataSocket = await Socket.connect(_socket.host, iPort,
         timeout: Duration(seconds: _socket.timeout));
     //Test if second socket connection accepted or not
     sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
 
-    List<int> lstDirectoryListing = List();
+    List<int> lstDirectoryListing = [];
     await dataSocket.listen((Uint8List data) {
       lstDirectoryListing.addAll(data);
     }).asFuture();
@@ -74,7 +75,7 @@ class FTPDirectory {
     await TransferUtil.checkTransferOK(_socket, sResponse);
 
     // Convert MLSD response into FTPEntry
-    List<FTPEntry> lstFTPEntries = List<FTPEntry>();
+    List<FTPEntry> lstFTPEntries = <FTPEntry>[];
     String.fromCharCodes(lstDirectoryListing).split('\n').forEach((line) {
       if (line.trim().isNotEmpty) {
         lstFTPEntries.add(FTPEntry.parse(line.replaceAll('\r', ""), cmd));
@@ -86,6 +87,6 @@ class FTPDirectory {
 
   Future<List<String>> listDirectoryContentOnlyNames() async {
     var list = await listDirectoryContent(cmd: DIR_LIST_COMMAND.NLST);
-    return list.map((f) => f.name).toList();
+    return list.map((f) => f.name).whereType<String>().toList();
   }
 }
