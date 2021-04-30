@@ -158,7 +158,9 @@ void main() async {
     } catch (e) {
       expect(e is FTPException, equals(true));
       expect(
-          e.message == 'Remote File $remoteFile does not exist!', equals(true));
+          (e as FTPException).message ==
+              'Remote File $remoteFile does not exist!',
+          equals(true));
     }
     //get file size
     expect(await _ftpConnect.sizeFile('../512KB.zip'), equals(512 * 1024));

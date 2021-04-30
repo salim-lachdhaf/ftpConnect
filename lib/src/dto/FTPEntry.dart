@@ -3,18 +3,18 @@ import 'package:ftpconnect/src/util/extenstion.dart';
 import 'package:intl/intl.dart';
 
 class FTPEntry {
-  final String name;
-  final DateTime modifyTime;
-  final String persmission;
-  final FTPEntryType type;
-  final int size;
-  final String unique;
-  final String group;
-  final int gid;
-  final String mode;
-  final String owner;
-  final int uid;
-  final Map<String, String> additionalProperties;
+  final String? name;
+  final DateTime? modifyTime;
+  final String? persmission;
+  final FTPEntryType? type;
+  final int? size;
+  final String? unique;
+  final String? group;
+  final int? gid;
+  final String? mode;
+  final String? owner;
+  final int? uid;
+  final Map<String, String>? additionalProperties;
 
   static final RegExp regexpLIST = RegExp(r"^([\-ld])" // Directory flag [1]
       r"([\-rwxs]{9})\s+" // Permissions [2]
@@ -47,7 +47,9 @@ class FTPEntry {
       this.uid,
       this.additionalProperties);
 
-  factory FTPEntry.parse(String responseLine, DIR_LIST_COMMAND cmd) {
+  factory FTPEntry.parse(String? responseLine, DIR_LIST_COMMAND? cmd) {
+    if (responseLine == null)
+      throw FTPException('Can\'t parse a null response line');
     if (cmd == DIR_LIST_COMMAND.LIST)
       return FTPEntry._parseListCommand(responseLine);
     else if (cmd == DIR_LIST_COMMAND.NLST)
@@ -57,21 +59,21 @@ class FTPEntry {
       return FTPEntry._parseMLSDCommand(responseLine);
   }
 
-  factory FTPEntry._parseMLSDCommand(final String responseLine) {
+  factory FTPEntry._parseMLSDCommand(final String? responseLine) {
     if (responseLine == null || responseLine.trim().isEmpty) {
       throw FTPException('Can\'t create instance from empty information');
     }
 
-    String _name;
-    DateTime _modifyTime;
-    String _persmission;
-    FTPEntryType _type;
+    String? _name;
+    DateTime? _modifyTime;
+    String? _persmission;
+    FTPEntryType? _type;
     int _size = 0;
-    String _unique;
-    String _group;
+    String? _unique;
+    String? _group;
     int _gid = -1;
-    String _mode;
-    String _owner;
+    String? _mode;
+    String? _owner;
     int _uid = -1;
     Map<String, String> _additional = {};
 
@@ -144,7 +146,7 @@ class FTPEntry {
   /// SII servers format:
   /// 02-11-15  03:05PM      <DIR>     1410887680 directory
   /// 02-11-15  03:05PM               1410887680 file.avi
-  factory FTPEntry._parseListCommand(final String responseLine) {
+  factory FTPEntry._parseListCommand(final String? responseLine) {
     if (responseLine == null || responseLine.trim().isEmpty) {
       throw FTPException('Can\'t create instance from empty information');
     }
@@ -156,22 +158,22 @@ class FTPEntry {
   }
 
   factory FTPEntry._parseLIST(final String responseLine) {
-    if (responseLine == null || responseLine.trim().isEmpty)
+    if (responseLine.trim().isEmpty)
       throw FTPException('Can\'t create instance from empty information');
     if (!regexpLIST.hasMatch(responseLine))
       throw FTPException(
           'Invalid format <$responseLine> for LIST command response !');
 
-    String _name;
-    DateTime _modifyTime;
-    String _persmission;
-    FTPEntryType _type;
+    late String _name;
+    DateTime? _modifyTime;
+    String? _persmission;
+    FTPEntryType? _type;
     int _size = 0;
-    String _unique;
-    String _group;
+    String? _unique;
+    String? _group;
     int _gid = -1;
-    String _mode;
-    String _owner;
+    String? _mode;
+    String? _owner;
     int _uid = -1;
 
     Iterable<Match> matches = regexpLIST.allMatches(responseLine);
@@ -192,45 +194,45 @@ class FTPEntry {
       //group
       _group = match.group(5);
       //size
-      _size = int.tryParse(match.group(6)) ?? 0;
+      _size = int.tryParse(match.group(6)!) ?? 0;
       //date
-      String date = (match.group(7).split(" ")..removeWhere((i) => i.isEmpty))
+      String date = (match.group(7)!.split(" ")..removeWhere((i) => i.isEmpty))
           .join(" "); //keep only one space
       //insert year
       if (date.contains(':')) date = '$date ${DateTime.now().year}';
       var format = date.contains(':') ? 'MMM dd hh:mm yyyy' : 'MMM dd yyyy';
       _modifyTime = DateFormat(format).parse(date);
       //file/dir name
-      _name = match.group(8);
+      _name = match.group(8)!;
     }
     return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
         _group, _gid, _mode, _owner, _uid, {});
   }
 
   factory FTPEntry._parseLISTiis(final String responseLine) {
-    if (responseLine == null || responseLine.trim().isEmpty) {
+    if (responseLine.trim().isEmpty) {
       throw FTPException('Can\'t create instance from empty information');
     }
     if (!regexpLISTSiiServers.hasMatch(responseLine))
       throw FTPException(
           'Invalid format <$responseLine> for LIST command response !');
 
-    String _name;
-    DateTime _modifyTime;
-    String _persmission;
-    FTPEntryType _type;
+    String? _name;
+    DateTime? _modifyTime;
+    String? _persmission;
+    FTPEntryType? _type;
     int _size = 0;
-    String _unique;
-    String _group;
+    String? _unique;
+    String? _group;
     int _gid = -1;
-    String _mode;
-    String _owner;
+    String? _mode;
+    String? _owner;
     int _uid = -1;
     Iterable<Match> matches = regexpLISTSiiServers.allMatches(responseLine);
     for (Match match in matches) {
       //date
       String date =
-          match.group(1).split(" ").fold('', (previousValue, element) {
+          match.group(1)!.split(" ").fold('', (previousValue, element) {
         //keep only one space and add fullyear if only last 2 digits in year
         if (element.isEmpty) return previousValue;
         if (previousValue.isEmpty)
@@ -244,18 +246,18 @@ class FTPEntry {
       _modifyTime = DateFormat('MM-dd-yyyy hh:mma').parse(date);
 
       //type
-      if (match.group(2).trim().isEmpty)
+      if (match.group(2)!.trim().isEmpty)
         _type = FTPEntryType.FILE;
-      else if (match.group(2).toLowerCase().contains("dir"))
+      else if (match.group(2)!.toLowerCase().contains("dir"))
         _type = FTPEntryType.DIR;
       else
         _type = FTPEntryType.LINK;
 
       //size
-      _size = int.tryParse(match.group(3)) ?? 0;
+      _size = int.tryParse(match.group(3)!) ?? 0;
 
       //file/dir name
-      _name = match.group(4);
+      _name = match.group(4)!;
     }
     return FTPEntry._(_name, _modifyTime, _persmission, _type, _size, _unique,
         _group, _gid, _mode, _owner, _uid, {});

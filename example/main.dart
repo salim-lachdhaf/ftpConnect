@@ -7,7 +7,7 @@ void main() async {
       user: "anonymous", pass: "anonymous", debug: true);
 
   ///an auxiliary function that manage showed log to UI
-  Future<void> _log(String log) async {
+  Future<void> _log(String? log) async {
     print(log ?? '');
     await Future.delayed(Duration(seconds: 1));
   }

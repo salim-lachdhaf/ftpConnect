@@ -9,7 +9,7 @@ import '../util/transferUtil.dart';
 import 'fileDownload.dart';
 
 class FileUpload {
-  final FTPSocket _socket;
+  final FTPSocket? _socket;
   final TransferMode _mode;
   final DebugLog _log;
 
@@ -18,30 +18,30 @@ class FileUpload {
 
   /// Upload File [fFile] to the current directory with [remoteName] (using filename if not set)
   Future<bool> uploadFile(File fFile,
-      {String remoteName = '', FileProgress onProgress}) async {
+      {String remoteName = '', FileProgress? onProgress}) async {
     _log.log('Upload File: ${fFile.path}');
 
     // Transfer Mode
     await TransferUtil.setTransferMode(_socket, _mode);
 
     // Enter passive mode
-    String sResponse = await TransferUtil.enterPassiveMode(_socket);
+    String sResponse = await TransferUtil.enterPassiveMode(_socket!);
 
     // Store File
     String sFilename = remoteName;
-    if (sFilename == null || sFilename.isEmpty) {
+    if (sFilename.isEmpty) {
       sFilename = basename(fFile.path);
     }
 
     // The response is the file to upload, witch will be managed by another socket
-    await _socket.sendCommand('STOR $sFilename', waitResponse: false);
+    await _socket!.sendCommand('STOR $sFilename', waitResponse: false);
 
     // Data Transfer Socket
-    int iPort = TransferUtil.parsePort(sResponse);
+    int iPort = TransferUtil.parsePort(sResponse)!;
     _log.log('Opening DataSocket to Port $iPort');
-    final Socket dataSocket = await Socket.connect(_socket.host, iPort);
+    final Socket dataSocket = await Socket.connect(_socket!.host, iPort);
     //Test if second socket connection accepted or not
-    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
+    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket!);
 
     _log.log('Start uploading...');
     final readStream = fFile.openRead();

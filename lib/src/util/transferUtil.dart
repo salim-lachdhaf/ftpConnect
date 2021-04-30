@@ -7,15 +7,15 @@ import '../ftpSocket.dart';
 class TransferUtil {
   /// Set the Transfer mode on [socket] to [mode]
   static Future<void> setTransferMode(
-      FTPSocket socket, TransferMode mode) async {
+      FTPSocket? socket, TransferMode mode) async {
     switch (mode) {
       case TransferMode.ascii:
         // Set to ASCII mode
-        await socket.sendCommand('TYPE A');
+        await socket!.sendCommand('TYPE A');
         break;
       case TransferMode.binary:
         // Set to BINARY mode
-        await socket.sendCommand('TYPE I');
+        await socket!.sendCommand('TYPE I');
         break;
       default:
         break;
@@ -24,7 +24,7 @@ class TransferUtil {
 
   /// Parse the Passive Mode Port from the Servers [sResponse]
   /// port format (|||xxxxx|)
-  static int parsePort(String sResponse) {
+  static int? parsePort(String sResponse) {
     int iParOpen = sResponse.indexOf('(');
     int iParClose = sResponse.indexOf(')');
 
@@ -60,7 +60,7 @@ class TransferUtil {
   ///original socket [socket], So here we test if the connection to the primary
   ///socket [socket] is accepted or not, if not we throw an exception.
   static Future<String> checkIsConnectionAccepted(FTPSocket socket) async {
-    String sResponse = await socket.readResponse();
+    String sResponse = await (socket.readResponse() as FutureOr<String>);
     if (!sResponse.startsWith('150')) {
       throw FTPException('Connection refused. ', sResponse);
     }
@@ -71,9 +71,9 @@ class TransferUtil {
   ///the secondary socket in the passive mode.
   ///Test first if the response already sent in the previous reply [pResponse]
   ///other wise read again socket [socket] response.
-  static Future<String> checkTransferOK(FTPSocket socket, pResponse) async {
+  static Future<String> checkTransferOK(FTPSocket? socket, pResponse) async {
     if (!pResponse.contains('226')) {
-      pResponse = await socket.readResponse();
+      pResponse = await socket!.readResponse();
       if (!pResponse.startsWith('226')) {
         throw FTPException('Transfer Error.', pResponse);
       }
@@ -82,7 +82,7 @@ class TransferUtil {
   }
 
   ///check the existence of given code inside a a given response
-  static bool isResponseStartsWith(String response, List<int> codes) {
+  static bool isResponseStartsWith(String? response, List<int> codes) {
     var lines = response?.split('\n') ?? [];
     for (var l in lines) {
       for (var c in codes) {
@@ -94,7 +94,7 @@ class TransferUtil {
 
   ///Tell the socket [socket] that we will enter in passive mode
   static Future<String> enterPassiveMode(FTPSocket socket) async {
-    String sResponse = await socket.sendCommand('EPSV');
+    String sResponse = await (socket.sendCommand('EPSV'));
     if (!sResponse.startsWith('229')) {
       throw FTPException('Could not start Passive Mode', sResponse);
     }

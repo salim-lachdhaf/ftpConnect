@@ -12,7 +12,7 @@ class FTPSocket {
   final DebugLog _log;
   final int timeout;
 
-  RawSocket _socket;
+  RawSocket? _socket;
 
   FTPSocket(this.host, this.port, this._log, this.timeout);
 
@@ -20,10 +20,10 @@ class FTPSocket {
   ///
   /// Blocks until data is received!
   Future<String> readResponse() async {
-    String sResponse;
+    late String sResponse;
     await Future.doWhile(() async {
-      if (_socket.available() > 0) {
-        sResponse = String.fromCharCodes(_socket.read()).trim();
+      if (_socket!.available() > 0) {
+        sResponse = String.fromCharCodes(_socket!.read()!).trim();
         return false;
       }
       await Future.delayed(Duration(milliseconds: 200));
@@ -40,7 +40,7 @@ class FTPSocket {
   /// if [waitResponse] the function waits for the reply, other wise return ''
   Future<String> sendCommand(String cmd, {bool waitResponse = true}) async {
     _log.log('> $cmd');
-    _socket.write(Utf8Codec().encode('$cmd\r\n'));
+    _socket!.write(Utf8Codec().encode('$cmd\r\n'));
 
     if (waitResponse == true) {
       var res = await readResponse();
@@ -52,7 +52,7 @@ class FTPSocket {
   ///if we receive a response different then that we are waiting for
   ///(both success or fail), we read again the response
   Future<bool> _isResponseOK(
-      String response, List<int> successCode, List<int> failCode) async {
+      String? response, List<int> successCode, List<int> failCode) async {
     if (TransferUtil.isResponseStartsWith(response, failCode)) return false;
     if (!TransferUtil.isResponseStartsWith(response, successCode)) {
       response = await readResponse();
@@ -71,12 +71,11 @@ class FTPSocket {
       _socket = await RawSocket.connect(host, port,
           timeout: Duration(seconds: timeout));
     } catch (e) {
-      throw FTPException(
-          'Could not connect to $host ($port)', e?.toString() ?? '');
+      throw FTPException('Could not connect to $host ($port)', e.toString());
     }
 
     // Send Username
-    String sResponse = await sendCommand('USER $user');
+    String? sResponse = await sendCommand('USER $user');
     if (!await _isResponseOK(sResponse, [220, 331], [520])) {
       throw FTPException('Wrong username $user', sResponse);
     }
