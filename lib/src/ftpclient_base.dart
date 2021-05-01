@@ -34,11 +34,12 @@ class FTPConnect {
       String user = 'anonymous',
       String pass = '',
       bool debug = false,
+      bool isSecured = false,
       int timeout = 30})
       : _user = user,
         _pass = pass,
         _log = debug ? PrintLog() : NoOpLogger() {
-    _socket = FTPSocket(host, port, _log, timeout);
+    _socket = FTPSocket(host, port, isSecured, _log, timeout);
   }
 
   /// Connect to the FTP Server
@@ -50,19 +51,29 @@ class FTPConnect {
   Future<bool> disconnect() => _socket.disconnect();
 
   /// Upload the File [fFile] to the current directory
-  Future<bool> uploadFile(File fFile,
-      {String sRemoteName = '',
-      TransferMode mode = TransferMode.binary,
-      FileProgress? onProgress}) {
-    return FileUpload(_socket, mode, _log)
-        .uploadFile(fFile, remoteName: sRemoteName, onProgress: onProgress);
+  Future<bool> uploadFile(
+    File fFile, {
+    String sRemoteName = '',
+    TransferMode mode = TransferMode.binary,
+    FileProgress? onProgress,
+    bool supportIPV6 = true,
+  }) {
+    return FileUpload(_socket, mode, _log).uploadFile(fFile,
+        remoteName: sRemoteName,
+        onProgress: onProgress,
+        supportIPV6: supportIPV6);
   }
 
   /// Download the Remote File [sRemoteName] to the local File [fFile]
-  Future<bool> downloadFile(String? sRemoteName, File fFile,
-      {TransferMode mode = TransferMode.binary, FileProgress? onProgress}) {
-    return FileDownload(_socket, mode, _log)
-        .downloadFile(sRemoteName, fFile, onProgress: onProgress);
+  Future<bool> downloadFile(
+    String? sRemoteName,
+    File fFile, {
+    TransferMode mode = TransferMode.binary,
+    FileProgress? onProgress,
+    bool? supportIPv6,
+  }) {
+    return FileDownload(_socket, mode, _log).downloadFile(sRemoteName, fFile,
+        onProgress: onProgress, supportIPV6: supportIPv6);
   }
 
   /// Create a new Directory with the Name of [sDirectory] in the current directory.
@@ -125,8 +136,12 @@ class FTPConnect {
   /// Returns the content of the current directory
   /// [cmd] refer to the used command for the server, there is servers working
   /// with MLSD and other with LIST
-  Future<List<FTPEntry>> listDirectoryContent({DIR_LIST_COMMAND? cmd}) {
-    return FTPDirectory(_socket).listDirectoryContent(cmd: cmd);
+  Future<List<FTPEntry>> listDirectoryContent({
+    DIR_LIST_COMMAND? cmd,
+    bool? supportIPv6,
+  }) {
+    return FTPDirectory(_socket)
+        .listDirectoryContent(cmd: cmd, supportIPV6: supportIPv6);
   }
 
   /// Returns the content names of the current directory
@@ -206,7 +221,7 @@ class FTPConnect {
       await Future.forEach(dirContent, (FTPEntry entry) async {
         if (entry.type == FTPEntryType.FILE) {
           File localFile = File(join(pLocalDir.path, entry.name));
-          await downloadFile(entry.name, localFile);
+          await downloadFile(entry.name!, localFile);
         } else if (entry.type == FTPEntryType.DIR) {
           //create a local directory
           var localDir = await Directory(join(pLocalDir.path, entry.name))

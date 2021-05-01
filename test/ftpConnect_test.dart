@@ -30,15 +30,20 @@ void main() async {
   });
 
   test('test ftpConnect No log', () async {
-    final FTPConnect _ftpConnectNoLog = new FTPConnect("speedtest.tele2.net",
-        user: "anonymous", pass: "anonymous", debug: false);
+    final FTPConnect _ftpConnectNoLog = new FTPConnect("users.on.net",
+        user: "pvpt", pass: "Lachdhaf", debug: true);
     expect(await _ftpConnectNoLog.connect(), equals(true));
+    await _ftpConnectNoLog.currentDirectory();
+
+    await _ftpConnectNoLog.listDirectoryContent(
+        supportIPv6: false, cmd: DIR_LIST_COMMAND.LIST);
+
     expect(await _ftpConnectNoLog.disconnect(), equals(true));
   });
 
   test('test ftpConnect timeOut', () async {
-    final FTPConnect _ftpConnectTimeOut =
-        new FTPConnect("speedtest.tele2.net", user: "xxxcx", pass: "xxxx");
+    final FTPConnect _ftpConnectTimeOut = new FTPConnect("speedtest.tele2.net",
+        user: "xxxcx", pass: "xxxx", isSecured: true);
 
     expect(() async => await _ftpConnectTimeOut.connect(),
         throwsA(isA<FTPException>()));
@@ -129,7 +134,7 @@ void main() async {
     expect(await _ftpConnect.currentDirectory(), equals("/upload"));
 
     //test upload file (this file will be automatically deleted after upload by the server)
-    void testUploadProgress(double p, int r) {
+    void testUploadProgress(double p, int r, int fileSize) {
       print('uploaded :$r byte =========> $p%');
     }
 
@@ -141,7 +146,7 @@ void main() async {
     //chech for file existence
     expect(await _ftpConnect.existFile('../512KB.zip'), equals(true));
     //test download file
-    void testDownloadProgress(double p, int r) {
+    void testDownloadProgress(double p, int r, int fileSize) {
       print('downloaded :$r byte =========> $p%');
     }
 

@@ -22,9 +22,13 @@ class TransferUtil {
     }
   }
 
+  static int? parsePort(String response, bool? isIPV6) {
+    return isIPV6 == false ? parsePortPASV(response) : parsePortEPSV(response);
+  }
+
   /// Parse the Passive Mode Port from the Servers [sResponse]
   /// port format (|||xxxxx|)
-  static int? parsePort(String sResponse) {
+  static int? parsePortEPSV(String sResponse) {
     int iParOpen = sResponse.indexOf('(');
     int iParClose = sResponse.indexOf(')');
 
@@ -32,6 +36,21 @@ class TransferUtil {
       sResponse = sResponse.substring(iParOpen + 4, iParClose - 1);
     }
     return int.tryParse(sResponse);
+  }
+
+  /// Parse the Passive Mode Port from the Servers [sResponse]
+  /// format 227 Entering Passive Mode (192,168,8,36,8,75).
+  static int parsePortPASV(String sResponse) {
+    int iParOpen = sResponse.indexOf('(');
+    int iParClose = sResponse.indexOf(')');
+
+    String sParameters = sResponse.substring(iParOpen + 1, iParClose);
+    List<String> lstParameters = sParameters.split(',');
+
+    int iPort1 = int.parse(lstParameters[lstParameters.length - 2]);
+    int iPort2 = int.parse(lstParameters[lstParameters.length - 1]);
+
+    return (iPort1 * 256) + iPort2;
   }
 
   ///retry a function [retryCount] times, until exceed [retryCount] or execute the function successfully
@@ -60,7 +79,7 @@ class TransferUtil {
   ///original socket [socket], So here we test if the connection to the primary
   ///socket [socket] is accepted or not, if not we throw an exception.
   static Future<String> checkIsConnectionAccepted(FTPSocket socket) async {
-    String sResponse = await (socket.readResponse() as FutureOr<String>);
+    String sResponse = await socket.readResponse();
     if (!sResponse.startsWith('150')) {
       throw FTPException('Connection refused. ', sResponse);
     }
@@ -93,11 +112,12 @@ class TransferUtil {
   }
 
   ///Tell the socket [socket] that we will enter in passive mode
-  static Future<String> enterPassiveMode(FTPSocket socket) async {
-    String sResponse = await (socket.sendCommand('EPSV'));
-    if (!sResponse.startsWith('229')) {
-      throw FTPException('Could not start Passive Mode', sResponse);
+  static Future<String> enterPassiveMode(
+      FTPSocket socket, bool? supportIPV6) async {
+    var res = await socket.sendCommand(supportIPV6 == false ? 'PASV' : 'EPSV');
+    if (!isResponseStartsWith(res, [229, 227])) {
+      throw FTPException('Could not start Passive Mode', res);
     }
-    return sResponse;
+    return res;
   }
 }

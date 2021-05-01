@@ -45,24 +45,26 @@ class FTPDirectory {
     return sResponse.substring(iStart, iEnd);
   }
 
-  Future<List<FTPEntry>> listDirectoryContent(
-      {DIR_LIST_COMMAND? cmd = DIR_LIST_COMMAND.MLSD}) async {
+  Future<List<FTPEntry>> listDirectoryContent({
+    DIR_LIST_COMMAND? cmd = DIR_LIST_COMMAND.MLSD,
+    bool? supportIPV6 = true,
+  }) async {
     // Transfer mode
     await TransferUtil.setTransferMode(_socket, TransferMode.ascii);
 
     // Enter passive mode
-    String sResponse = await TransferUtil.enterPassiveMode(_socket);
+    var response = await TransferUtil.enterPassiveMode(_socket, supportIPV6);
 
     // Directoy content listing, the response will be handled by another socket
     await _socket.sendCommand((cmd ?? DIR_LIST_COMMAND.MLSD).describeEnum,
         waitResponse: false);
 
     // Data transfer socket
-    int iPort = TransferUtil.parsePort(sResponse)!;
+    int iPort = TransferUtil.parsePort(response, supportIPV6)!;
     Socket dataSocket = await Socket.connect(_socket.host, iPort,
         timeout: Duration(seconds: _socket.timeout));
     //Test if second socket connection accepted or not
-    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket);
+    response = await TransferUtil.checkIsConnectionAccepted(_socket);
 
     List<int> lstDirectoryListing = [];
     await dataSocket.listen((Uint8List data) {
@@ -72,7 +74,7 @@ class FTPDirectory {
     await dataSocket.close();
 
     //Test if All data are well transferred
-    await TransferUtil.checkTransferOK(_socket, sResponse);
+    await TransferUtil.checkTransferOK(_socket, response);
 
     // Convert MLSD response into FTPEntry
     List<FTPEntry> lstFTPEntries = <FTPEntry>[];
@@ -85,8 +87,13 @@ class FTPDirectory {
     return lstFTPEntries;
   }
 
-  Future<List<String>> listDirectoryContentOnlyNames() async {
-    var list = await listDirectoryContent(cmd: DIR_LIST_COMMAND.NLST);
+  Future<List<String>> listDirectoryContentOnlyNames({
+    bool supportIPV6 = true,
+  }) async {
+    var list = await listDirectoryContent(
+      cmd: DIR_LIST_COMMAND.NLST,
+      supportIPV6: supportIPV6,
+    );
     return list.map((f) => f.name).whereType<String>().toList();
   }
 }

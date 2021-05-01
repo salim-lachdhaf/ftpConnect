@@ -1,3 +1,7 @@
+## [1.0.0] - 2021.05.01
+* migrate to null-Safety
+* add IPV6 support
+* add secure mode support
 ## [0.2.1] - 2020.12.09
 * add onProgress callBack for download and upload file
 ## [0.2.0] - 2020.11.26

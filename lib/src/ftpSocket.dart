@@ -11,29 +11,35 @@ class FTPSocket {
   final int port;
   final DebugLog _log;
   final int timeout;
-
+  final bool secured;
   RawSocket? _socket;
 
-  FTPSocket(this.host, this.port, this._log, this.timeout);
+  FTPSocket(this.host, this.port, this.secured, this._log, this.timeout);
 
   /// Read the FTP Server response from the Stream
   ///
   /// Blocks until data is received!
   Future<String> readResponse() async {
-    late String sResponse;
+    StringBuffer sResponse = StringBuffer();
     await Future.doWhile(() async {
-      if (_socket!.available() > 0) {
-        sResponse = String.fromCharCodes(_socket!.read()!).trim();
-        return false;
+      bool dataReceivedSuccessfully = false;
+
+      //this is used to read all data for specific command line
+      while (_socket!.available() > 0) {
+        sResponse.writeln(String.fromCharCodes(_socket!.read()!).trim());
+        dataReceivedSuccessfully = true;
+        await Future.delayed(Duration(milliseconds: 300));
       }
-      await Future.delayed(Duration(milliseconds: 200));
+      if (dataReceivedSuccessfully) return false;
+
+      await Future.delayed(Duration(milliseconds: 300));
       return true;
     }).timeout(Duration(seconds: timeout), onTimeout: () {
       throw FTPException('Timeout reached for Receiving response !');
     });
 
-    _log.log('< $sResponse');
-    return sResponse;
+    _log.log('< ${sResponse.toString()}');
+    return sResponse.toString();
   }
 
   /// Send a command [cmd] to the FTP Server
@@ -68,8 +74,19 @@ class FTPSocket {
     _log.log('Connecting...');
 
     try {
-      _socket = await RawSocket.connect(host, port,
-          timeout: Duration(seconds: timeout));
+      if (secured == true)
+        _socket = await RawSecureSocket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeout),
+          onBadCertificate: ((X509Certificate cert) => true),
+        );
+      else
+        _socket = await RawSocket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeout),
+        );
     } catch (e) {
       throw FTPException('Could not connect to $host ($port)', e.toString());
     }

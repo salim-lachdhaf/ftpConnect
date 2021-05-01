@@ -8,7 +8,8 @@ import '../ftpSocket.dart';
 import '../util/transferUtil.dart';
 import 'file.dart';
 
-typedef void FileProgress(double progress, int totalLength);
+typedef void FileProgress(
+    double progressInPercent, int totalReceived, int fileSize);
 
 class FileDownload {
   final FTPSocket? _socket;
@@ -18,8 +19,12 @@ class FileDownload {
   /// File Download Command
   FileDownload(this._socket, this._mode, this._log);
 
-  Future<bool> downloadFile(String? sRemoteName, File fLocalFile,
-      {FileProgress? onProgress}) async {
+  Future<bool> downloadFile(
+    String? sRemoteName,
+    File fLocalFile, {
+    FileProgress? onProgress,
+    bool? supportIPV6 = true,
+  }) async {
     _log.log('Download $sRemoteName to ${fLocalFile.path}');
     //check for file existence and init totalData to receive
     int fileSize = 0;
@@ -32,18 +37,18 @@ class FileDownload {
     await TransferUtil.setTransferMode(_socket, _mode);
 
     // Enter passive mode
-    String sResponse = await TransferUtil.enterPassiveMode(_socket!);
+    var response = await TransferUtil.enterPassiveMode(_socket!, supportIPV6);
 
     //the response will be the file, witch will be loaded with another socket
     await _socket!.sendCommand('RETR $sRemoteName', waitResponse: false);
 
     // Data Transfer Socket
-    int iPort = TransferUtil.parsePort(sResponse)!;
+    int iPort = TransferUtil.parsePort(response, supportIPV6)!;
     _log.log('Opening DataSocket to Port $iPort');
     final Socket dataSocket = await Socket.connect(_socket!.host, iPort,
         timeout: Duration(seconds: _socket!.timeout));
     // Test if second socket connection accepted or not
-    sResponse = await TransferUtil.checkIsConnectionAccepted(_socket!);
+    response = await TransferUtil.checkIsConnectionAccepted(_socket!);
 
     // Changed to listen mode instead so that it's possible to send information back on downloaded amount
     var sink = fLocalFile.openWrite(mode: FileMode.writeOnly);
@@ -57,7 +62,7 @@ class FileDownload {
         //in case that the file size is 0, then pass directly 100
         double percentVal = double.tryParse(percent) ?? 100;
         if (percentVal.isInfinite || percentVal.isNaN) percentVal = 100;
-        onProgress(percentVal, received);
+        onProgress(percentVal, received, fileSize);
       }
     }).asFuture();
 
@@ -66,7 +71,7 @@ class FileDownload {
     await sink.close();
 
     //Test if All data are well transferred
-    await TransferUtil.checkTransferOK(_socket, sResponse);
+    await TransferUtil.checkTransferOK(_socket, response);
 
     _log.log('File Downloaded!');
     return true;
